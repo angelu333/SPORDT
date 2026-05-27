@@ -1,0 +1,103 @@
+<div class="form-container">
+    <div class="form-header">
+        <h2>{{ isEditMode() ? 'Editar Categoría' : 'Nueva Categoría' }}</h2>
+        <p class="form-subtitle">Define el rango de edad para esta clasificación deportiva.</p>
+    </div>
+
+    @if (errorMsg()) {
+        <div class="alert alert-error">
+            <p>{{ errorMsg() }}</p>
+        </div>
+    }
+
+    @if (loading() && isEditMode()) {
+        <div class="loading">
+            <p>Cargando datos de la categoría...</p>
+        </div>
+    } @else {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+            <!-- Nombre de la categoría -->
+            <div class="form-group">
+                <label for="nombre_categoria">Nombre de la Categoría *</label>
+                <input
+                    id="nombre_categoria"
+                    type="text"
+                    formControlName="nombre_categoria"
+                    placeholder="Ej: Sub-12"
+                />
+                @if (f['nombre_categoria'].touched && f['nombre_categoria'].hasError('required')) {
+                    <span class="error-text">El nombre es obligatorio</span>
+                }
+                @if (f['nombre_categoria'].touched && f['nombre_categoria'].hasError('maxlength')) {
+                    <span class="error-text">Máximo 50 caracteres</span>
+                }
+            </div>
+
+            <!-- Rango de edad (dos campos en fila) -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="edad_minima">Edad Mínima (años) *</label>
+                    <input
+                        id="edad_minima"
+                        type="number"
+                        formControlName="edad_minima"
+                        placeholder="Ej: 11"
+                        min="0"
+                    />
+                    @if (f['edad_minima'].touched && f['edad_minima'].hasError('required')) {
+                        <span class="error-text">Campo obligatorio</span>
+                    }
+                    @if (f['edad_minima'].touched && f['edad_minima'].hasError('min')) {
+                        <span class="error-text">Debe ser 0 o mayor</span>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label for="edad_maxima">Edad Máxima (años) *</label>
+                    <input
+                        id="edad_maxima"
+                        type="number"
+                        formControlName="edad_maxima"
+                        placeholder="Ej: 12"
+                        min="1"
+                    />
+                    @if (f['edad_maxima'].touched && f['edad_maxima'].hasError('required')) {
+                        <span class="error-text">Campo obligatorio</span>
+                    }
+                    @if (f['edad_maxima'].touched && f['edad_maxima'].hasError('min')) {
+                        <span class="error-text">Debe ser 1 o mayor</span>
+                    }
+                </div>
+            </div>
+
+            <!-- Error de rango cruzado -->
+            @if (form.touched && form.hasError('edadRangeInvalid')) {
+                <div class="alert alert-warning">
+                    ⚠️ La edad mínima debe ser menor que la edad máxima.
+                </div>
+            }
+
+            <!-- Descripción -->
+            <div class="form-group">
+                <label for="descripcion">Descripción <span class="opcional">(opcional)</span></label>
+                <textarea
+                    id="descripcion"
+                    formControlName="descripcion"
+                    placeholder="Ej: Categoría pre-competitiva para niños de 11 a 12 años"
+                    rows="3"
+                ></textarea>
+                @if (f['descripcion'].touched && f['descripcion'].hasError('maxlength')) {
+                    <span class="error-text">Máximo 255 caracteres</span>
+                }
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" [disabled]="loading()">
+                    {{ loading() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Guardar') }}
+                </button>
+                <a routerLink="/categorias" class="btn btn-cancel">Cancelar</a>
+            </div>
+        </form>
+    }
+</div>

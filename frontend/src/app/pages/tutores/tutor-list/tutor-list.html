@@ -1,0 +1,64 @@
+<div class="tutor-list-container">
+    <div class="header">
+        <h2>Gestión de Tutores</h2>
+        <a routerLink="/tutores/nuevo" class="btn btn-primary">
+            + Nuevo Tutor
+        </a>
+    </div>
+
+    @if (loading()) {
+        <div class="loading">
+            <p>Cargando tutores...</p>
+        </div>
+    }
+
+    @if (errorMsg()) {
+        <div class="alert alert-error">
+            <p>{{ errorMsg() }}</p>
+            <button (click)="loadTutores()" class="btn btn-secondary">Reintentar</button>
+        </div>
+    }
+
+    @if (!loading() && !errorMsg()) {
+        @if (tutores().length === 0) {
+            <div class="empty-state">
+                <p>No hay tutores registrados aún.</p>
+                <a routerLink="/tutores/nuevo" class="btn btn-primary">Registrar el primer tutor</a>
+            </div>
+        } @else {
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre Completo</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Fecha Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (tutor of tutores(); track tutor.id_tutor) {
+                            <tr>
+                                <td>{{ tutor.id_tutor }}</td>
+                                <td>{{ tutor.nombre_completo }}</td>
+                                <td>{{ tutor.telefono }}</td>
+                                <td>{{ tutor.email || '—' }}</td>
+                                <td>{{ tutor.fecha_registro | date:'dd/MM/yyyy' }}</td>
+                                <td class="actions">
+                                    <button (click)="editTutor(tutor.id_tutor!)" class="btn btn-edit" title="Editar">
+                                        ✏️
+                                    </button>
+                                    <button (click)="deleteTutor(tutor)" class="btn btn-delete" title="Desactivar">
+                                        🗑️
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,80 @@
+<div class="list-container">
+    <div class="header">
+        <div class="header-title">
+            <h2>Categorías Deportivas</h2>
+            <span class="header-subtitle">Clasificación de alumnos por rango de edad</span>
+        </div>
+        <a routerLink="/categorias/nueva" class="btn btn-primary">
+            + Nueva Categoría
+        </a>
+    </div>
+
+    @if (loading()) {
+        <div class="loading">
+            <p>Cargando categorías...</p>
+        </div>
+    }
+
+    @if (errorMsg()) {
+        <div class="alert alert-error">
+            <p>{{ errorMsg() }}</p>
+            <button (click)="loadCategorias()" class="btn btn-secondary">Reintentar</button>
+        </div>
+    }
+
+    @if (!loading() && !errorMsg()) {
+        @if (categorias().length === 0) {
+            <div class="empty-state">
+                <p>🏷️ No hay categorías registradas aún.</p>
+                <a routerLink="/categorias/nueva" class="btn btn-primary">Registrar primera categoría</a>
+            </div>
+        } @else {
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Categoría</th>
+                            <th>Rango de Edad</th>
+                            <th>Descripción</th>
+                            <th>Alumnos Activos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (cat of categorias(); track cat.id_categoria) {
+                            <tr>
+                                <td>
+                                    <span class="categoria-badge">{{ cat.nombre_categoria }}</span>
+                                </td>
+                                <td class="rango">
+                                    {{ cat.edad_minima }} – {{ cat.edad_maxima }} años
+                                </td>
+                                <td class="descripcion">{{ cat.descripcion || '—' }}</td>
+                                <td>
+                                    <span class="alumnos-count" [class.sin-alumnos]="cat.total_alumnos === 0">
+                                        {{ cat.total_alumnos ?? 0 }} alumno(s)
+                                    </span>
+                                </td>
+                                <td class="actions">
+                                    <button
+                                        (click)="editCategoria(cat.id_categoria!)"
+                                        class="btn btn-edit"
+                                        title="Editar categoría">
+                                        ✏️
+                                    </button>
+                                    <button
+                                        (click)="deleteCategoria(cat)"
+                                        class="btn btn-delete"
+                                        title="Desactivar categoría"
+                                        [disabled]="(cat.total_alumnos ?? 0) > 0">
+                                        🗑️
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>

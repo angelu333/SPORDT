@@ -1,0 +1,112 @@
+<div class="list-container">
+    <div class="header">
+        <div class="header-title">
+            <h2>Gestión de Alumnos</h2>
+            <span class="header-subtitle">Directorio principal de jugadores</span>
+        </div>
+        <a routerLink="/alumnos/nuevo" class="btn btn-primary">
+            + Nuevo Alumno
+        </a>
+    </div>
+
+    <!-- Barra de Filtros -->
+    <div class="filters-bar">
+        <div class="filter-group">
+            <label for="filtroCategoria">Filtrar por Categoría:</label>
+            <select id="filtroCategoria" [(ngModel)]="filtroCategoria">
+                <option value="">Todas las categorías</option>
+                @for (cat of categorias(); track cat.id_categoria) {
+                    <option [value]="cat.id_categoria">{{ cat.nombre_categoria }}</option>
+                }
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="filtroEstatus">Filtrar por Estatus:</label>
+            <select id="filtroEstatus" [(ngModel)]="filtroEstatus">
+                <option value="">Todos los estatus</option>
+                <option value="Activo">Activos</option>
+                <option value="Inactivo">Inactivos</option>
+            </select>
+        </div>
+    </div>
+
+    @if (loading()) {
+        <div class="loading">
+            <p>Cargando alumnos...</p>
+        </div>
+    }
+
+    @if (errorMsg()) {
+        <div class="alert alert-error">
+            <p>{{ errorMsg() }}</p>
+            <button (click)="loadAlumnos()" class="btn btn-secondary">Reintentar</button>
+        </div>
+    }
+
+    @if (!loading() && !errorMsg()) {
+        @if (alumnosFiltrados().length === 0) {
+            <div class="empty-state">
+                <p>No se encontraron alumnos con los filtros actuales.</p>
+                @if (alumnos().length === 0) {
+                    <a routerLink="/alumnos/nuevo" class="btn btn-primary">Registrar primer alumno</a>
+                }
+            </div>
+        } @else {
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Tutor</th>
+                            <th>F. Inscripción</th>
+                            <th>Estatus</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (alumno of alumnosFiltrados(); track alumno.id_alumno) {
+                            <tr>
+                                <td class="nombre-cell">
+                                    <strong>{{ alumno.nombre_completo }}</strong>
+                                    @if (alumno.genero) {
+                                        <span class="genero-badge">{{ alumno.genero }}</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (alumno.nombre_categoria) {
+                                        <span class="categoria-badge">{{ alumno.nombre_categoria }}</span>
+                                    } @else {
+                                        <span class="no-data">Sin asignar</span>
+                                    }
+                                </td>
+                                <td>{{ alumno.tutor_nombre }}</td>
+                                <td>{{ alumno.fecha_inscripcion | date:'dd/MM/yyyy' }}</td>
+                                <td>
+                                    <span class="estatus-badge" [class]="'estatus-' + (alumno.estatus | lowercase)">
+                                        {{ alumno.estatus }}
+                                    </span>
+                                </td>
+                                <td class="actions">
+                                    <button
+                                        (click)="editAlumno(alumno.id_alumno!)"
+                                        class="btn btn-edit"
+                                        title="Editar alumno">
+                                        ✏️
+                                    </button>
+                                    <button
+                                        (click)="deleteAlumno(alumno)"
+                                        class="btn btn-delete"
+                                        title="Dar de baja">
+                                        🗑️
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>

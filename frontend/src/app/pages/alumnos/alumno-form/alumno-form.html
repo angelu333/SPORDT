@@ -1,0 +1,116 @@
+<div class="form-container">
+    <div class="form-header">
+        <h2>{{ isEditMode() ? 'Editar Alumno' : 'Registrar Alumno' }}</h2>
+        <p class="form-subtitle">Ingresa los datos personales y asigna un tutor.</p>
+    </div>
+
+    @if (errorMsg()) {
+        <div class="alert alert-error">
+            <p>{{ errorMsg() }}</p>
+        </div>
+    }
+
+    @if (loading() && isEditMode()) {
+        <div class="loading">
+            <p>Cargando datos del alumno...</p>
+        </div>
+    } @else {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+            <!-- Fila: Tutor -->
+            <div class="form-group">
+                <label for="id_tutor">Tutor Responsable *</label>
+                <select id="id_tutor" formControlName="id_tutor">
+                    <option value="">Seleccione un tutor...</option>
+                    @for (tutor of tutores(); track tutor.id_tutor) {
+                        <option [value]="tutor.id_tutor">{{ tutor.nombre_completo }}</option>
+                    }
+                </select>
+                @if (f['id_tutor'].touched && f['id_tutor'].hasError('required')) {
+                    <span class="error-text">Debe seleccionar un tutor</span>
+                }
+            </div>
+
+            <!-- Fila: Nombre Completo -->
+            <div class="form-group">
+                <label for="nombre_completo">Nombre Completo del Alumno *</label>
+                <input
+                    id="nombre_completo"
+                    type="text"
+                    formControlName="nombre_completo"
+                    placeholder="Ej: Mateo Pérez García"
+                />
+                @if (f['nombre_completo'].touched && f['nombre_completo'].hasError('required')) {
+                    <span class="error-text">El nombre es obligatorio</span>
+                }
+            </div>
+
+            <!-- Fila: Fecha y Categoría Automática -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fecha_nacimiento">Fecha de Nacimiento *</label>
+                    <input
+                        id="fecha_nacimiento"
+                        type="date"
+                        formControlName="fecha_nacimiento"
+                    />
+                    @if (f['fecha_nacimiento'].touched && f['fecha_nacimiento'].hasError('required')) {
+                        <span class="error-text">La fecha es obligatoria</span>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Categoría Asignada (Automático)</label>
+                    <div class="categoria-auto-box" [class.valida]="categoriaValida()" [class.invalida]="!categoriaValida() && f['fecha_nacimiento'].value">
+                        {{ categoriaAsignada() }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fila: Género y CURP -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="genero">Género</label>
+                    <select id="genero" formControlName="genero">
+                        <option value="">Seleccione...</option>
+                        <option value="M">Masculino (M)</option>
+                        <option value="F">Femenino (F)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="curp">CURP <span class="opcional">(opcional)</span></label>
+                    <input
+                        id="curp"
+                        type="text"
+                        formControlName="curp"
+                        placeholder="18 caracteres"
+                        style="text-transform: uppercase;"
+                    />
+                    @if (f['curp'].touched && f['curp'].hasError('maxlength')) {
+                        <span class="error-text">Máximo 18 caracteres</span>
+                    }
+                </div>
+            </div>
+
+            <!-- Fila: Estatus (Solo edición) -->
+            @if (isEditMode()) {
+                <div class="form-group">
+                    <label for="estatus">Estatus del Alumno</label>
+                    <select id="estatus" formControlName="estatus">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                        <option value="Baja">Baja Definitiva</option>
+                    </select>
+                </div>
+            }
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" [disabled]="loading()">
+                    {{ loading() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Guardar') }}
+                </button>
+                <a routerLink="/alumnos" class="btn btn-cancel">Cancelar</a>
+            </div>
+        </form>
+    }
+</div>
