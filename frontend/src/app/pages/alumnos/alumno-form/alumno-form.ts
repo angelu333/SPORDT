@@ -1,10 +1,19 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AlumnoService } from '../../../services/alumno.service';
 import { TutorService } from '../../../services/tutor.service';
 import { CategoriaService } from '../../../services/categoria.service';
 import { Tutor } from '../../../models/tutor.model';
+
+// ── Validador personalizado: rechaza fechas que sean hoy o en el futuro ──────
+function fechaPasadaValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    const seleccionada = new Date(control.value);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    return seleccionada >= hoy ? { fechaFutura: true } : null;
+}
 
 @Component({
     selector: 'app-alumno-form',
@@ -26,6 +35,13 @@ export class AlumnoForm implements OnInit {
     alumnoId = signal<number | null>(null);
     loading = signal(false);
     errorMsg = signal('');
+
+    // Fecha máxima seleccionable en el datepicker (ayer)
+    readonly fechaMaxima: string = (() => {
+        const ayer = new Date();
+        ayer.setDate(ayer.getDate() - 1);
+        return ayer.toISOString().split('T')[0]; // YYYY-MM-DD
+    })();
     
     // Datos auxiliares
     tutores = signal<Tutor[]>([]);
@@ -38,11 +54,12 @@ export class AlumnoForm implements OnInit {
     ngOnInit(): void {
         this.form = this.fb.group({
             nombre_completo: ['', [Validators.required, Validators.maxLength(150)]],
-            fecha_nacimiento: ['', Validators.required],
+            // Incluye validación de fecha pasada además del required
+            fecha_nacimiento: ['', [Validators.required, fechaPasadaValidator]],
             genero: [''],
             curp: ['', Validators.maxLength(18)],
             id_tutor: ['', Validators.required],
-            estatus: ['Activo'] // Solo se usa en edición, pero lo dejamos por defecto
+            estatus: ['Activo']
         });
 
         this.loadTutores();

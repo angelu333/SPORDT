@@ -1,11 +1,19 @@
 const pool = require('../config/db');
 
-// Obtener todos los tutores activos
+// Obtener todos los tutores activos con conteo de alumnos activos
 const getAll = async (req, res) => {
     try {
-        const [rows] = await pool.query(
-            'SELECT * FROM tutores WHERE activo = 1 ORDER BY fecha_registro DESC'
-        );
+        const [rows] = await pool.query(`
+            SELECT 
+                t.*,
+                COUNT(a.id_alumno) AS total_alumnos
+            FROM tutores t
+            LEFT JOIN alumnos a 
+                ON a.id_tutor = t.id_tutor AND a.estatus = 'Activo'
+            WHERE t.activo = 1
+            GROUP BY t.id_tutor
+            ORDER BY t.fecha_registro DESC
+        `);
         res.json(rows);
     } catch (error) {
         console.error('Error al obtener tutores:', error);

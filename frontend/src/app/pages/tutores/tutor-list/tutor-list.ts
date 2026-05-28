@@ -1,12 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TutorService } from '../../../services/tutor.service';
 import { Tutor } from '../../../models/tutor.model';
 
 @Component({
     selector: 'app-tutor-list',
-    imports: [RouterLink, DatePipe],
+    imports: [RouterLink, DatePipe, FormsModule],
     templateUrl: './tutor-list.html',
     styleUrl: './tutor-list.css'
 })
@@ -18,6 +19,18 @@ export class TutorList implements OnInit {
     tutores = signal<Tutor[]>([]);
     loading = signal(true);
     errorMsg = signal('');
+
+    // Búsqueda por nombre
+    busqueda = signal<string>('');
+
+    // Lista filtrada computada: reacciona automáticamente al cambiar busqueda() o tutores()
+    tutoresFiltrados = computed(() => {
+        const termino = this.busqueda().toLowerCase().trim();
+        if (!termino) return this.tutores();
+        return this.tutores().filter(t =>
+            t.nombre_completo.toLowerCase().includes(termino)
+        );
+    });
 
     ngOnInit(): void {
         this.loadTutores();

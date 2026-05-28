@@ -11,10 +11,25 @@
 
     <!-- Barra de Filtros -->
     <div class="filters-bar">
+        <!-- Búsqueda por nombre -->
+        <div class="filter-group search-group">
+            <span class="search-icon">🔍</span>
+            <input
+                id="busquedaNombre"
+                type="text"
+                [(ngModel)]="busquedaNombre"
+                placeholder="Buscar alumno por nombre..."
+                autocomplete="off"
+            />
+            @if (busquedaNombre()) {
+                <button class="btn-clear" (click)="busquedaNombre.set('')" title="Limpiar">✕</button>
+            }
+        </div>
+
         <div class="filter-group">
-            <label for="filtroCategoria">Filtrar por Categoría:</label>
+            <label for="filtroCategoria">Categoría:</label>
             <select id="filtroCategoria" [(ngModel)]="filtroCategoria">
-                <option value="">Todas las categorías</option>
+                <option value="">Todas</option>
                 @for (cat of categorias(); track cat.id_categoria) {
                     <option [value]="cat.id_categoria">{{ cat.nombre_categoria }}</option>
                 }
@@ -22,9 +37,9 @@
         </div>
         
         <div class="filter-group">
-            <label for="filtroEstatus">Filtrar por Estatus:</label>
+            <label for="filtroEstatus">Estatus:</label>
             <select id="filtroEstatus" [(ngModel)]="filtroEstatus">
-                <option value="">Todos los estatus</option>
+                <option value="">Todos</option>
                 <option value="Activo">Activos</option>
                 <option value="Inactivo">Inactivos</option>
             </select>
@@ -45,12 +60,17 @@
     }
 
     @if (!loading() && !errorMsg()) {
-        @if (alumnosFiltrados().length === 0) {
+        @if (alumnos().length === 0) {
+            <div class="empty-state">
+                <p>No hay alumnos registrados aún.</p>
+                <a routerLink="/alumnos/nuevo" class="btn btn-primary">Registrar primer alumno</a>
+            </div>
+        } @else if (alumnosFiltrados().length === 0) {
             <div class="empty-state">
                 <p>No se encontraron alumnos con los filtros actuales.</p>
-                @if (alumnos().length === 0) {
-                    <a routerLink="/alumnos/nuevo" class="btn btn-primary">Registrar primer alumno</a>
-                }
+                <button class="btn btn-secondary" (click)="busquedaNombre.set(''); filtroCategoria.set(''); filtroEstatus.set('')">
+                    Limpiar filtros
+                </button>
             </div>
         } @else {
             <div class="table-container">

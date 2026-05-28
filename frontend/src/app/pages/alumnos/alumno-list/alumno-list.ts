@@ -27,13 +27,16 @@ export class AlumnoList implements OnInit {
     // Filtros
     filtroCategoria = signal<string>('');
     filtroEstatus = signal<string>('');
+    busquedaNombre = signal<string>(''); // Búsqueda por nombre de alumno
 
-    // Alumnos filtrados computados
+    // Alumnos filtrados computados — reacciona a los 3 filtros a la vez
     alumnosFiltrados = computed(() => {
+        const termino = this.busquedaNombre().toLowerCase().trim();
         return this.alumnos().filter(a => {
+            const matchNombre = !termino || a.nombre_completo.toLowerCase().includes(termino);
             const matchCategoria = !this.filtroCategoria() || a.id_categoria?.toString() === this.filtroCategoria();
             const matchEstatus = !this.filtroEstatus() || a.estatus === this.filtroEstatus();
-            return matchCategoria && matchEstatus;
+            return matchNombre && matchCategoria && matchEstatus;
         });
     });
 

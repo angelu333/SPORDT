@@ -53,9 +53,13 @@
                         id="fecha_nacimiento"
                         type="date"
                         formControlName="fecha_nacimiento"
+                        [max]="fechaMaxima"
                     />
                     @if (f['fecha_nacimiento'].touched && f['fecha_nacimiento'].hasError('required')) {
                         <span class="error-text">La fecha es obligatoria</span>
+                    }
+                    @if (f['fecha_nacimiento'].touched && f['fecha_nacimiento'].hasError('fechaFutura')) {
+                        <span class="error-text">La fecha de nacimiento no puede ser hoy ni en el futuro</span>
                     }
                 </div>
 

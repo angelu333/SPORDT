@@ -6,4 +6,5 @@ export interface Tutor {
     direccion?: string | null;
     activo?: number;
     fecha_registro?: string;
+    total_alumnos?: number; // Campo calculado por JOIN en getAll
 }
