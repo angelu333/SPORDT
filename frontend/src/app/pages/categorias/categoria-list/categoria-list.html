@@ -25,7 +25,7 @@
     @if (!loading() && !errorMsg()) {
         @if (categorias().length === 0) {
             <div class="empty-state">
-                <p>🏷️ No hay categorías registradas aún.</p>
+                <p>No hay categorías registradas aún.</p>
                 <a routerLink="/categorias/nueva" class="btn btn-primary">Registrar primera categoría</a>
             </div>
         } @else {
@@ -60,14 +60,14 @@
                                         (click)="editCategoria(cat.id_categoria!)"
                                         class="btn btn-edit"
                                         title="Editar categoría">
-                                        ✏️
+                                        Editar
                                     </button>
                                     <button
                                         (click)="deleteCategoria(cat)"
                                         class="btn btn-delete"
                                         title="Desactivar categoría"
                                         [disabled]="(cat.total_alumnos ?? 0) > 0">
-                                        🗑️
+                                        Eliminar
                                     </button>
                                 </td>
                             </tr>

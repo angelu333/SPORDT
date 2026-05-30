@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="page-header">
         <div class="header-title">
-            <div class="header-icon">🪪</div>
+            <div class="header-icon"></div>
             <div>
                 <h2>Credencialización Obligatoria</h2>
                 <span class="header-subtitle">Control operativo y financiero de futbolistas inscritos por temporada</span>
@@ -14,7 +14,7 @@
     <!-- KPIs Financieros y Operativos -->
     <div class="kpi-grid">
         <div class="kpi-card card-purple">
-            <div class="kpi-icon">🪪</div>
+            <div class="kpi-icon"></div>
             <div class="kpi-info">
                 <span class="kpi-label">Credenciales Emitidas</span>
                 <h3 class="kpi-value">{{ kpis().total }}</h3>
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="kpi-card card-blue">
-            <div class="kpi-icon">💰</div>
+            <div class="kpi-icon"></div>
             <div class="kpi-info">
                 <span class="kpi-label">Ingreso Proyectado</span>
                 <h3 class="kpi-value">{{ kpis().proyectado | currency:'MXN':'symbol':'1.2-2' }}</h3>
@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="kpi-card card-green">
-            <div class="kpi-icon">✅</div>
+            <div class="kpi-icon"></div>
             <div class="kpi-info">
                 <span class="kpi-label">Recaudación Cobrada</span>
                 <h3 class="kpi-value">{{ kpis().recaudado | currency:'MXN':'symbol':'1.2-2' }}</h3>
@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="kpi-card card-orange">
-            <div class="kpi-icon">⏳</div>
+            <div class="kpi-icon"></div>
             <div class="kpi-info">
                 <span class="kpi-label">Pendiente de Cobro</span>
                 <h3 class="kpi-value">{{ kpis().pendiente | currency:'MXN':'symbol':'1.2-2' }}</h3>
@@ -49,10 +49,10 @@
 
     <!-- Alertas de Sistema -->
     @if (errorMsg()) {
-        <div class="alert alert-error"><span>⚠️</span> {{ errorMsg() }}</div>
+        <div class="alert alert-error"><span></span> {{ errorMsg() }}</div>
     }
     @if (successMsg()) {
-        <div class="alert alert-success"><span>✅</span> {{ successMsg() }}</div>
+        <div class="alert alert-success"><span></span> {{ successMsg() }}</div>
     }
 
     <!-- Tabs de Navegación -->
@@ -63,7 +63,7 @@
             [class.active]="activeTab() === 'emision'"
             (click)="activeTab.set('emision')"
         >
-            ⚡ Control y Emisión Operativa
+            Control y Emisión Operativa
         </button>
         <button 
             type="button" 
@@ -71,7 +71,7 @@
             [class.active]="activeTab() === 'listado'"
             (click)="activeTab.set('listado'); loadAllCredenciales()"
         >
-            📋 Historial de Credenciales
+            Historial de Credenciales
         </button>
     </div>
 
@@ -81,7 +81,7 @@
             <!-- Barra de Selección Rápida -->
             <div class="filter-bar selection-panel">
                 <div class="filter-group select-wrapper">
-                    <label for="select-torneo">🏆 Torneo / Temporada</label>
+                    <label for="select-torneo">Torneo / Temporada</label>
                     <select 
                         id="select-torneo" 
                         [(ngModel)]="selectedTorneoId" 
@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="filter-group select-wrapper">
-                    <label for="select-equipo">🛡️ Equipo Externo</label>
+                    <label for="select-equipo">Equipo Externo</label>
                     <select 
                         id="select-equipo" 
                         [(ngModel)]="selectedEquipoId" 
@@ -120,7 +120,7 @@
             } @else {
                 @if (roster().length === 0) {
                     <div class="empty-state">
-                        <div class="empty-icon">👥</div>
+                        <div class="empty-icon"></div>
                         <h4>Sin futbolistas en la plantilla</h4>
                         <p>No se encontraron jugadores activos en este equipo. Registra jugadores en el módulo de Equipos primero.</p>
                         @if (selectedEquipoId()) {
@@ -204,7 +204,7 @@
                                                         @if (savingJugadorId() === jugador.id_jugador) {
                                                             <span class="spinner-btn"></span> Generando...
                                                         } @else {
-                                                            ⚡ Emitir Credencial
+                                                            Emitir Credencial
                                                         }
                                                     </button>
                                                 } @else {
@@ -215,9 +215,9 @@
                                                             class="select-action"
                                                             [disabled]="updatingCredencialId() === jugador.id_credencial"
                                                         >
-                                                            <option value="Activa">🟢 Activa</option>
-                                                            <option value="Inactiva">🔴 Inactiva</option>
-                                                            <option value="Vencida">🟡 Vencida</option>
+                                                            <option value="Activa">Activa</option>
+                                                            <option value="Inactiva">Inactiva</option>
+                                                            <option value="Vencida">Vencida</option>
                                                         </select>
                                                     </div>
                                                 }
@@ -287,7 +287,7 @@
             } @else {
                 @if (filteredCredenciales().length === 0) {
                     <div class="empty-state">
-                        <div class="empty-icon">🪪</div>
+                        <div class="empty-icon"></div>
                         <h4>No se encontraron credenciales</h4>
                         <p>No hay credenciales emitidas que coincidan con los criterios de búsqueda.</p>
                     </div>
@@ -332,8 +332,8 @@
                                             <!-- Equipo & Torneo -->
                                             <td>
                                                 <div class="tournament-wrapper">
-                                                    <span class="team-label">🛡️ {{ cred.nombre_equipo }}</span>
-                                                    <span class="tournament-label">🏆 {{ cred.nombre_torneo }}</span>
+                                                    <span class="team-label">{{ cred.nombre_equipo }}</span>
+                                                    <span class="tournament-label">{{ cred.nombre_torneo }}</span>
                                                 </div>
                                             </td>
 
@@ -357,9 +357,9 @@
                                                         [class.active-style]="cred.estatus === 'Activa'"
                                                         [disabled]="updatingCredencialId() === cred.id_credencial"
                                                     >
-                                                        <option value="Activa">🟢 Activa</option>
-                                                        <option value="Inactiva">🔴 Inactiva</option>
-                                                        <option value="Vencida">🟡 Vencida</option>
+                                                        <option value="Activa">Activa</option>
+                                                        <option value="Inactiva">Inactiva</option>
+                                                        <option value="Vencida">Vencida</option>
                                                     </select>
                                                 </div>
                                             </td>

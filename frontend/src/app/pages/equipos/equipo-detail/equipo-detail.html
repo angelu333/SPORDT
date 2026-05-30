@@ -7,7 +7,7 @@
         </div>
     } @else if (errorMsg()) {
         <div class="alert alert-error">
-            <span>⚠️</span> {{ errorMsg() }}
+            <span></span> {{ errorMsg() }}
             <a routerLink="/equipos" class="btn btn-secondary">Volver</a>
         </div>
     } @else if (equipo()) {
@@ -28,9 +28,9 @@
                 <div class="hero-info">
                     <h2>{{ equipo()!.nombre_equipo }}</h2>
                     <div class="hero-meta">
-                        <span>👤 {{ equipo()!.nombre_delegado }}</span>
-                        <span>📱 {{ equipo()!.telefono_delegado }}</span>
-                        <span>📅 Inscrito: {{ equipo()!.fecha_inscripcion | date:'dd/MM/yyyy' }}</span>
+                        <span>{{ equipo()!.nombre_delegado }}</span>
+                        <span>{{ equipo()!.telefono_delegado }}</span>
+                        <span>Inscrito: {{ equipo()!.fecha_inscripcion | date:'dd/MM/yyyy' }}</span>
                     </div>
                     <div class="hero-stats">
                         <div class="stat-chip">
@@ -45,7 +45,7 @@
                 </div>
                 <!-- Acciones -->
                 <div class="hero-actions">
-                    <a [routerLink]="['/equipos/editar', equipo()!.id_equipo]" class="btn btn-edit-team">✏️ Editar</a>
+                    <a [routerLink]="['/equipos/editar', equipo()!.id_equipo]" class="btn btn-edit-team">Editar</a>
                 </div>
             </div>
         </div>
@@ -53,10 +53,10 @@
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab-btn" [class.active]="activeTab() === 'plantilla'" (click)="activeTab.set('plantilla')">
-                ⚽ Plantilla de Jugadores <span class="tab-count">{{ equipo()!.jugadores?.length ?? 0 }}</span>
+                Plantilla de Jugadores <span class="tab-count">{{ equipo()!.jugadores?.length ?? 0 }}</span>
             </button>
             <button class="tab-btn" [class.active]="activeTab() === 'cargos'" (click)="activeTab.set('cargos')">
-                💰 Cargos Financieros <span class="tab-count">{{ equipo()!.cargos?.length ?? 0 }}</span>
+                Cargos Financieros <span class="tab-count">{{ equipo()!.cargos?.length ?? 0 }}</span>
             </button>
         </div>
 
@@ -70,7 +70,7 @@
 
                 @if (!equipo()!.jugadores || equipo()!.jugadores!.length === 0) {
                     <div class="empty-state">
-                        <div class="empty-icon">⚽</div>
+                        <div class="empty-icon"></div>
                         <h3>Plantilla vacía</h3>
                         <p>Aún no hay jugadores registrados para este equipo.</p>
                         <button class="btn btn-primary" (click)="openAddJugador()">Agregar primer jugador</button>
@@ -86,7 +86,7 @@
                                     <span class="player-name">{{ jugador.nombre_completo }}</span>
                                     <span class="player-curp">{{ jugador.curp || 'Sin CURP' }}</span>
                                 </div>
-                                <button class="btn-remove-player" (click)="removeJugador(jugador)" title="Dar de baja">🗑️</button>
+                                <button class="btn-remove-player" (click)="removeJugador(jugador)" title="Dar de baja">Baja</button>
                             </div>
                         }
                     </div>
@@ -103,7 +103,7 @@
 
                 @if (!equipo()!.cargos || equipo()!.cargos!.length === 0) {
                     <div class="empty-state">
-                        <div class="empty-icon">💰</div>
+                        <div class="empty-icon"></div>
                         <h3>Sin cargos registrados</h3>
                         <p>No se han generado cargos financieros para este equipo todavía.</p>
                     </div>
@@ -112,7 +112,7 @@
                         @for (cargo of equipo()!.cargos!; track cargo.id_cargo) {
                             <div class="cargo-item">
                                 <div class="cargo-concepto">
-                                    <span class="cargo-icon">💳</span>
+                                    <span class="cargo-icon"></span>
                                     <div>
                                         <span class="cargo-nombre">{{ cargo.concepto }}</span>
                                         <span class="cargo-fecha">Vence: {{ cargo.fecha_vencimiento | date:'dd/MM/yyyy' }}</span>
@@ -135,11 +135,11 @@
         <div class="modal-overlay" (click)="showAddJugador.set(false)">
             <div class="modal-card" (click)="$event.stopPropagation()">
                 <div class="modal-header">
-                    <h3>⚽ Agregar Jugador a la Plantilla</h3>
+                    <h3>Agregar Jugador a la Plantilla</h3>
                     <button class="modal-close" (click)="showAddJugador.set(false)">✕</button>
                 </div>
                 @if (addJugadorError()) {
-                    <div class="alert alert-error"><span>⚠️</span> {{ addJugadorError() }}</div>
+                    <div class="alert alert-error"><span></span> {{ addJugadorError() }}</div>
                 }
                 <div class="modal-body">
                     <div class="form-group">
@@ -161,7 +161,7 @@
                     <button class="btn btn-cancel" (click)="showAddJugador.set(false)">Cancelar</button>
                     <button class="btn btn-primary" (click)="saveJugador()" [disabled]="savingJugador()">
                         @if (savingJugador()) { <span class="btn-spinner"></span> Guardando... }
-                        @else { ✅ Agregar Jugador }
+                        @else { Agregar Jugador }
                     </button>
                 </div>
             </div>

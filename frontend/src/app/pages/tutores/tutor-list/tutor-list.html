@@ -12,7 +12,7 @@
     <!-- Barra de búsqueda -->
     @if (!loading() && !errorMsg() && tutores().length > 0) {
         <div class="search-bar">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"></span>
             <input
                 id="busqueda-tutor"
                 type="text"
@@ -21,7 +21,7 @@
                 autocomplete="off"
             />
             @if (busqueda()) {
-                <button class="btn-clear" (click)="busqueda.set('')" title="Limpiar búsqueda">✕</button>
+                <button class="btn-clear" (click)="busqueda.set('')" title="Limpiar búsqueda">x</button>
             }
         </div>
     }
@@ -81,14 +81,14 @@
                                 <td>{{ tutor.fecha_registro | date:'dd/MM/yyyy' }}</td>
                                 <td class="actions">
                                     <button (click)="editTutor(tutor.id_tutor!)" class="btn btn-edit" title="Editar">
-                                        ✏️
+                                        Editar
                                     </button>
                                     <button
                                         (click)="deleteTutor(tutor)"
                                         class="btn btn-delete"
                                         title="Desactivar"
                                         [disabled]="(tutor.total_alumnos ?? 0) > 0">
-                                        🗑️
+                                        Eliminar
                                     </button>
                                 </td>
                             </tr>

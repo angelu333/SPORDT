@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="page-header">
         <div class="header-title">
-            <div class="header-icon">🏆</div>
+            <div class="header-icon"></div>
             <div>
                 <h2>Torneos y Temporadas</h2>
                 <span class="header-subtitle">Liga externa — configuración y gestión de torneos</span>
@@ -16,7 +16,7 @@
     @if (!loading() && !errorMsg() && torneos().length > 0) {
         <div class="filters-bar">
             <div class="search-bar">
-                <span class="search-icon">🔍</span>
+                <span class="search-icon"></span>
                 <input
                     id="busqueda-torneo"
                     type="text"
@@ -25,15 +25,15 @@
                     autocomplete="off"
                 />
                 @if (busqueda()) {
-                    <button class="btn-clear" (click)="busqueda.set('')">✕</button>
+                    <button class="btn-clear" (click)="busqueda.set('')">x</button>
                 }
             </div>
             <select id="filtro-estatus" [(ngModel)]="filtroEstatus" class="select-filter">
                 <option value="">Todos los estatus</option>
-                <option value="Planificacion">📋 Planificación</option>
-                <option value="Activo">🏆 Activo</option>
-                <option value="Finalizado">✅ Finalizado</option>
-                <option value="Cancelado">❌ Cancelado</option>
+                <option value="Planificacion">Planificación</option>
+                <option value="Activo">Activo</option>
+                <option value="Finalizado">Finalizado</option>
+                <option value="Cancelado">Cancelado</option>
             </select>
         </div>
     }
@@ -49,7 +49,7 @@
     <!-- Error -->
     @if (errorMsg()) {
         <div class="alert alert-error">
-            <span>⚠️</span>
+            <span></span>
             <p>{{ errorMsg() }}</p>
             <button (click)="loadTorneos()" class="btn btn-secondary">Reintentar</button>
         </div>
@@ -59,14 +59,14 @@
     @if (!loading() && !errorMsg()) {
         @if (torneos().length === 0) {
             <div class="empty-state">
-                <div class="empty-icon">🏟️</div>
+                <div class="empty-icon"></div>
                 <h3>Aún no hay torneos configurados</h3>
                 <p>Registra el primer torneo de la liga para comenzar.</p>
                 <a routerLink="/torneos/nuevo" class="btn btn-primary">Configurar primer torneo</a>
             </div>
         } @else if (torneosFiltrados().length === 0) {
             <div class="empty-state">
-                <div class="empty-icon">🔍</div>
+                <div class="empty-icon"></div>
                 <h3>Sin resultados</h3>
                 <p>Ningún torneo coincide con los filtros aplicados.</p>
                 <button class="btn btn-secondary" (click)="busqueda.set(''); filtroEstatus.set('')">Limpiar filtros</button>
@@ -87,8 +87,8 @@
                                 {{ getEstatusIcon(torneo.estatus) }} {{ torneo.estatus ?? 'Planificación' }}
                             </span>
                             <div class="card-actions-top">
-                                <button (click)="editTorneo(torneo.id_torneo!)" class="btn-icon" title="Editar">✏️</button>
-                                <button (click)="deleteTorneo(torneo)" class="btn-icon btn-icon-danger" title="Eliminar">🗑️</button>
+                                <button (click)="editTorneo(torneo.id_torneo!)" class="btn-icon" title="Editar">Editar</button>
+                                <button (click)="deleteTorneo(torneo)" class="btn-icon btn-icon-danger" title="Eliminar">Eliminar</button>
                             </div>
                         </div>
 
@@ -110,7 +110,7 @@
 
                         <!-- Duración -->
                         <div class="duracion-chip">
-                            🗓️ {{ getDuracionDias(torneo.fecha_inicio, torneo.fecha_fin) }} días de competición
+                            {{ getDuracionDias(torneo.fecha_inicio, torneo.fecha_fin) }} días de competición
                         </div>
 
                         <!-- Categorías -->
@@ -136,7 +136,7 @@
                         <!-- Reglamento -->
                         @if (torneo.reglamento) {
                             <div class="reglamento-preview">
-                                <span class="reglamento-icon">📄</span>
+                                <span class="reglamento-icon"></span>
                                 <span class="reglamento-text">{{ torneo.reglamento }}</span>
                             </div>
                         }

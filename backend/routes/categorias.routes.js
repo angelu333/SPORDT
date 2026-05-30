@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const categoriasController = require('../controllers/categorias.controller');
 
-// ⚠️  IMPORTANTE: La ruta /asignar debe ir ANTES de /:id
+// IMPORTANTE: La ruta /asignar debe ir ANTES de /:id
 // para que Express no la interprete como un ID numérico.
 
 // POST   /api/categorias/asignar  → Calcular y devolver categoría por fecha de nacimiento

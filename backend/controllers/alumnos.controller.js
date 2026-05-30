@@ -109,7 +109,7 @@ const create = async (req, res) => {
 
         res.status(201).json(nuevoAlumno[0]);
 
-        // ✅ Disparar cargo de inscripción automáticamente (no bloquea la respuesta)
+        // Disparar cargo de inscripcion automaticamente (no bloquea la respuesta)
         generarCargoInscripcion(result.insertId);
 
     } catch (error) {

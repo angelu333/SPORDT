@@ -2,7 +2,7 @@
     <!-- Header -->
     <div class="page-header">
         <div class="header-title">
-            <div class="header-icon">🏟️</div>
+            <div class="header-icon"></div>
             <div>
                 <h2>Equipos Externos</h2>
                 <span class="header-subtitle">Clubes registrados en la liga</span>
@@ -16,7 +16,7 @@
     <!-- Barra de búsqueda -->
     @if (!loading() && !errorMsg() && equipos().length > 0) {
         <div class="search-bar">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"></span>
             <input
                 id="busqueda-equipo"
                 type="text"
@@ -25,7 +25,7 @@
                 autocomplete="off"
             />
             @if (busqueda()) {
-                <button class="btn-clear" (click)="busqueda.set('')" title="Limpiar">✕</button>
+                <button class="btn-clear" (click)="busqueda.set('')" title="Limpiar">x</button>
             }
         </div>
     }
@@ -41,7 +41,7 @@
     <!-- Estado de error -->
     @if (errorMsg()) {
         <div class="alert alert-error">
-            <span class="alert-icon">⚠️</span>
+            <span class="alert-icon"></span>
             <p>{{ errorMsg() }}</p>
             <button (click)="loadEquipos()" class="btn btn-secondary">Reintentar</button>
         </div>
@@ -52,14 +52,14 @@
 
         @if (equipos().length === 0) {
             <div class="empty-state">
-                <div class="empty-icon">🏆</div>
+                <div class="empty-icon"></div>
                 <h3>Aún no hay equipos registrados</h3>
                 <p>Comienza registrando el primer club de la liga.</p>
                 <a routerLink="/equipos/nuevo" class="btn btn-primary">Registrar primer equipo</a>
             </div>
         } @else if (equiposFiltrados().length === 0) {
             <div class="empty-state">
-                <div class="empty-icon">🔍</div>
+                <div class="empty-icon"></div>
                 <h3>Sin resultados</h3>
                 <p>No se encontró ningún equipo con "<strong>{{ busqueda() }}</strong>".</p>
                 <button class="btn btn-secondary" (click)="busqueda.set('')">Ver todos</button>
@@ -90,32 +90,32 @@
                             <h3 class="equipo-nombre">{{ equipo.nombre_equipo }}</h3>
 
                             <div class="card-info-row">
-                                <span class="info-icon">👤</span>
+                                <span class="info-icon"></span>
                                 <span>{{ equipo.nombre_delegado }}</span>
                             </div>
                             <div class="card-info-row">
-                                <span class="info-icon">📱</span>
+                                <span class="info-icon"></span>
                                 <span>{{ equipo.telefono_delegado }}</span>
                             </div>
                             <div class="card-info-row">
-                                <span class="info-icon">📅</span>
+                                <span class="info-icon"></span>
                                 <span>Inscrito: {{ equipo.fecha_inscripcion | date:'dd/MM/yyyy' }}</span>
                             </div>
 
                             <!-- Badge de jugadores -->
                             <div class="jugadores-badge" [class.sin-jugadores]="(equipo.total_jugadores ?? 0) === 0">
-                                ⚽ {{ equipo.total_jugadores ?? 0 }} {{ (equipo.total_jugadores ?? 0) === 1 ? 'jugador' : 'jugadores' }} en plantilla
+                                {{ equipo.total_jugadores ?? 0 }} {{ (equipo.total_jugadores ?? 0) === 1 ? 'jugador' : 'jugadores' }} en plantilla
                             </div>
                         </div>
 
                         <!-- Acciones de la card -->
                         <div class="card-actions">
                             <button (click)="verDetalle(equipo.id_equipo!)" class="btn btn-detail" title="Ver plantilla y detalle">
-                                📋 Ver Plantilla
+                                Ver Plantilla
                             </button>
                             <div class="card-actions-secondary">
-                                <button (click)="editEquipo(equipo.id_equipo!)" class="btn btn-edit" title="Editar">✏️</button>
-                                <button (click)="deleteEquipo(equipo)" class="btn btn-delete" title="Desactivar">🗑️</button>
+                                <button (click)="editEquipo(equipo.id_equipo!)" class="btn btn-edit" title="Editar">Editar</button>
+                                <button (click)="deleteEquipo(equipo)" class="btn btn-delete" title="Desactivar">Eliminar</button>
                             </div>
                         </div>
                     </div>

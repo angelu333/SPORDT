@@ -68,12 +68,12 @@ export class TorneoList implements OnInit {
 
     getEstatusIcon(estatus: string | undefined): string {
         const map: Record<string, string> = {
-            'Planificacion': '📋',
-            'Activo': '🏆',
-            'Finalizado': '✅',
-            'Cancelado': '❌'
+            'Planificacion': 'Planificación',
+            'Activo': 'Activo',
+            'Finalizado': 'Finalizado',
+            'Cancelado': 'Cancelado'
         };
-        return map[estatus ?? ''] ?? '📋';
+        return map[estatus ?? ''] ?? 'Planificación';
     }
 
     getDuracionDias(inicio: string, fin: string): number {

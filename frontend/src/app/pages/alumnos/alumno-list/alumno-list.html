@@ -13,7 +13,7 @@
     <div class="filters-bar">
         <!-- Búsqueda por nombre -->
         <div class="filter-group search-group">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"></span>
             <input
                 id="busquedaNombre"
                 type="text"
@@ -22,7 +22,7 @@
                 autocomplete="off"
             />
             @if (busquedaNombre()) {
-                <button class="btn-clear" (click)="busquedaNombre.set('')" title="Limpiar">✕</button>
+                <button class="btn-clear" (click)="busquedaNombre.set('')" title="Limpiar">x</button>
             }
         </div>
 
@@ -113,13 +113,13 @@
                                         (click)="editAlumno(alumno.id_alumno!)"
                                         class="btn btn-edit"
                                         title="Editar alumno">
-                                        ✏️
+                                        Editar
                                     </button>
                                     <button
                                         (click)="deleteAlumno(alumno)"
                                         class="btn btn-delete"
                                         title="Dar de baja">
-                                        🗑️
+                                        Eliminar
                                     </button>
                                 </td>
                             </tr>

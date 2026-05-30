@@ -51,7 +51,7 @@ const getFechaEnDias = (dias) => {
 // Cron: '5 0 1 * *' = A las 00:05 del día 1 de cada mes
 // ============================================================
 const generarMensualidades = async () => {
-    console.log('💳 [Cobranza] Iniciando generación de mensualidades...');
+    console.log('[Cobranza] Iniciando generación de mensualidades...');
 
     try {
         const periodo = getPeriodoActual();
@@ -62,7 +62,7 @@ const generarMensualidades = async () => {
             "SELECT * FROM tarifas WHERE tipo = 'Mensualidad' AND activo = 1 LIMIT 1"
         );
         if (tarifas.length === 0) {
-            console.warn('⚠️  [Cobranza] No se encontró tarifa de Mensualidad activa. Job cancelado.');
+            console.warn('[Cobranza] No se encontró tarifa de Mensualidad activa. Job cancelado.');
             return { generados: 0, omitidos: 0, error: 'Sin tarifa activa' };
         }
         const tarifa = tarifas[0];
@@ -72,7 +72,7 @@ const generarMensualidades = async () => {
             "SELECT id_alumno, nombre_completo FROM alumnos WHERE estatus = 'Activo'"
         );
         if (alumnos.length === 0) {
-            console.log('ℹ️  [Cobranza] No hay alumnos activos. Job finalizado sin cargos.');
+            console.log('[Cobranza] No hay alumnos activos. Job finalizado sin cargos.');
             return { generados: 0, omitidos: 0 };
         }
 
@@ -108,11 +108,11 @@ const generarMensualidades = async () => {
             generados++;
         }
 
-        console.log(`✅ [Cobranza] Mensualidades generadas: ${generados} | Omitidas (ya existían): ${omitidos}`);
+        console.log(`[Cobranza] Mensualidades generadas: ${generados} | Omitidas (ya existían): ${omitidos}`);
         return { generados, omitidos };
 
     } catch (error) {
-        console.error('❌ [Cobranza] Error al generar mensualidades:', error.message);
+        console.error('[Cobranza] Error al generar mensualidades:', error.message);
         return { generados: 0, omitidos: 0, error: error.message };
     }
 };
@@ -123,7 +123,7 @@ const generarMensualidades = async () => {
 // al momento de registrar un nuevo alumno.
 // ============================================================
 const generarCargoInscripcion = async (idAlumno) => {
-    console.log(`📋 [Cobranza] Generando cargo de inscripción para alumno ID: ${idAlumno}`);
+    console.log(`[Cobranza] Generando cargo de inscripción para alumno ID: ${idAlumno}`);
 
     try {
         // Obtener la tarifa de inscripción activa
@@ -131,7 +131,7 @@ const generarCargoInscripcion = async (idAlumno) => {
             "SELECT * FROM tarifas WHERE tipo = 'Inscripcion' AND activo = 1 LIMIT 1"
         );
         if (tarifas.length === 0) {
-            console.warn('⚠️  [Cobranza] No se encontró tarifa de Inscripción activa. Se omite el cargo.');
+            console.warn('[Cobranza] No se encontró tarifa de Inscripción activa. Se omite el cargo.');
             return null;
         }
         const tarifa = tarifas[0];
@@ -146,11 +146,11 @@ const generarCargoInscripcion = async (idAlumno) => {
             [idAlumno, tarifa.concepto, tarifa.monto, fechaVencimiento]
         );
 
-        console.log(`✅ [Cobranza] Cargo de inscripción generado (ID: ${result.insertId}) — Vence: ${fechaVencimiento}`);
+        console.log(`[Cobranza] Cargo de inscripción generado (ID: ${result.insertId}) — Vence: ${fechaVencimiento}`);
         return result.insertId;
 
     } catch (error) {
-        console.error('❌ [Cobranza] Error al generar cargo de inscripción:', error.message);
+        console.error('[Cobranza] Error al generar cargo de inscripción:', error.message);
         return null;
     }
 };
@@ -160,7 +160,7 @@ const generarCargoInscripcion = async (idAlumno) => {
 // Cron: '0 8 * * *' = Todos los días a las 08:00
 // ============================================================
 const actualizarCargosVencidos = async () => {
-    console.log('🔄 [Cobranza] Verificando cargos vencidos...');
+    console.log('[Cobranza] Verificando cargos vencidos...');
 
     try {
         const hoy = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -174,15 +174,15 @@ const actualizarCargosVencidos = async () => {
         );
 
         if (result.affectedRows > 0) {
-            console.log(`⚠️  [Cobranza] ${result.affectedRows} cargo(s) marcados como Vencido.`);
+            console.log(`[Cobranza] ${result.affectedRows} cargo(s) marcados como Vencido.`);
         } else {
-            console.log('✅ [Cobranza] No hay cargos vencidos nuevos.');
+            console.log('[Cobranza] No hay cargos vencidos nuevos.');
         }
 
         return { actualizados: result.affectedRows };
 
     } catch (error) {
-        console.error('❌ [Cobranza] Error al actualizar vencidos:', error.message);
+        console.error('[Cobranza] Error al actualizar vencidos:', error.message);
         return { actualizados: 0, error: error.message };
     }
 };
@@ -193,11 +193,11 @@ const actualizarCargosVencidos = async () => {
 // Se llama una vez desde index.js al iniciar el servidor.
 // ============================================================
 const iniciarMotorCobranza = () => {
-    console.log('⚙️  [Cobranza] Iniciando motor de cobranza recurrente...');
+    console.log('[Cobranza] Iniciando motor de cobranza recurrente...');
 
     // JOB 1: Mensualidades — Día 1 de cada mes a las 00:05
     cron.schedule('5 0 1 * *', () => {
-        console.log('\n📅 [Cobranza] Ejecutando job mensual de mensualidades...');
+        console.log('\n[Cobranza] Ejecutando job mensual de mensualidades...');
         generarMensualidades();
     }, {
         timezone: 'America/Chihuahua' // Zona horaria de México (Chihuahua/Ciudad Juárez)
@@ -205,13 +205,13 @@ const iniciarMotorCobranza = () => {
 
     // JOB 3: Vencimientos — Todos los días a las 08:00
     cron.schedule('0 8 * * *', () => {
-        console.log('\n🕗 [Cobranza] Ejecutando job diario de vencimientos...');
+        console.log('\n[Cobranza] Ejecutando job diario de vencimientos...');
         actualizarCargosVencidos();
     }, {
         timezone: 'America/Chihuahua'
     });
 
-    console.log('✅ [Cobranza] Motor activo. Jobs programados:');
+    console.log('[Cobranza] Motor activo. Jobs programados:');
     console.log('   • Mensualidades: día 1 de cada mes a las 00:05');
     console.log('   • Vencimientos:  todos los días a las 08:00');
 };

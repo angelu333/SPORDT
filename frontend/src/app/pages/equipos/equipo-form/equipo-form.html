@@ -1,9 +1,9 @@
 <div class="equipo-form-container">
     <!-- Header -->
     <div class="form-header">
-        <a routerLink="/equipos" class="btn-back">← Volver a Equipos</a>
+        <a routerLink="/equipos" class="btn-back">Volver a Equipos</a>
         <div class="header-title">
-            <div class="header-icon">{{ isEditMode() ? '✏️' : '🏟️' }}</div>
+            <div class="header-icon">{{ isEditMode() ? 'Editar' : 'Nuevo' }}</div>
             <div>
                 <h2>{{ isEditMode() ? 'Editar Equipo' : 'Registrar Equipo Externo' }}</h2>
                 <span class="header-subtitle">
@@ -24,19 +24,19 @@
             <!-- Mensajes de feedback -->
             @if (errorMsg()) {
                 <div class="alert alert-error">
-                    <span>⚠️</span> {{ errorMsg() }}
+                    <span></span> {{ errorMsg() }}
                 </div>
             }
             @if (successMsg()) {
                 <div class="alert alert-success">
-                    <span>✅</span> {{ successMsg() }}
+                    <span></span> {{ successMsg() }}
                 </div>
             }
 
             <!-- Aviso de cargo automático (solo en modo creación) -->
             @if (!isEditMode()) {
                 <div class="alert alert-info">
-                    <span>💰</span> Al registrar el equipo, se generará automáticamente un <strong>cargo de inscripción de $500.00 MXN</strong> pendiente de pago.
+                    <span></span> Al registrar el equipo, se generará automáticamente un <strong>cargo de inscripción de $500.00 MXN</strong> pendiente de pago.
                 </div>
             }
 
@@ -44,7 +44,7 @@
 
                 <!-- Sección de escudo -->
                 <div class="form-section">
-                    <h3 class="section-title">🛡️ Escudo del Club</h3>
+                    <h3 class="section-title">Escudo del Club</h3>
                     <div class="escudo-uploader">
                         <!-- Preview -->
                         <div class="escudo-preview-area">
@@ -53,7 +53,7 @@
                                 <button type="button" class="btn-remove-escudo" (click)="removeEscudo()" title="Quitar escudo">✕</button>
                             } @else {
                                 <div class="escudo-placeholder-upload">
-                                    <span class="upload-icon">🏆</span>
+                                    <span class="upload-icon"></span>
                                     <span class="upload-hint">Sin escudo</span>
                                 </div>
                             }
@@ -61,7 +61,7 @@
                         <!-- Input de archivo -->
                         <div class="escudo-upload-actions">
                             <label for="escudo-input" class="btn btn-upload">
-                                📁 {{ escudoPreview() ? 'Cambiar escudo' : 'Subir escudo' }}
+                                {{ escudoPreview() ? 'Cambiar escudo' : 'Subir escudo' }}
                             </label>
                             <input
                                 id="escudo-input"
@@ -77,7 +77,7 @@
 
                 <!-- Sección de datos del equipo -->
                 <div class="form-section">
-                    <h3 class="section-title">📋 Datos del Club</h3>
+                    <h3 class="section-title">Datos del Club</h3>
 
                     <div class="form-group">
                         <label for="nombre_equipo">Nombre del Equipo <span class="required">*</span></label>
@@ -104,7 +104,7 @@
 
                 <!-- Sección de delegado -->
                 <div class="form-section">
-                    <h3 class="section-title">👤 Representante / Delegado</h3>
+                    <h3 class="section-title">Representante / Delegado</h3>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -139,7 +139,7 @@
                         @if (loading()) {
                             <span class="btn-spinner"></span> Guardando...
                         } @else {
-                            {{ isEditMode() ? '💾 Guardar Cambios' : '✅ Registrar Equipo' }}
+                            {{ isEditMode() ? 'Guardar Cambios' : 'Registrar Equipo' }}
                         }
                     </button>
                 </div>
