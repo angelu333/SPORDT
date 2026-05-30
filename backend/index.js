@@ -69,7 +69,7 @@ app.use('/api/cargos', cargosRoutes);
  */
 app.post('/api/motor/mensualidades', async (req, res) => {
     try {
-        console.log('📲 [Motor] Job de mensualidades ejecutado manualmente via API');
+        console.log('[Motor] Job de mensualidades ejecutado manualmente via API');
         const resultado = await generarMensualidades();
         res.json({
             mensaje: 'Job de mensualidades ejecutado correctamente',
@@ -86,7 +86,7 @@ app.post('/api/motor/mensualidades', async (req, res) => {
  */
 app.post('/api/motor/vencimientos', async (req, res) => {
     try {
-        console.log('📲 [Motor] Job de vencimientos ejecutado manualmente via API');
+        console.log(' [Motor] Job de vencimientos ejecutado manualmente via API');
         const resultado = await actualizarCargosVencidos();
         res.json({
             mensaje: 'Job de vencimientos ejecutado correctamente',
@@ -101,7 +101,7 @@ app.post('/api/motor/vencimientos', async (req, res) => {
 // Iniciar servidor y arrancar motor de cobranza
 // ────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor SporDT corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor SporDT corriendo en http://localhost:${PORT}`);
     // Arrancar el motor de cobranza (registra los cron jobs)
     iniciarMotorCobranza();
 });
