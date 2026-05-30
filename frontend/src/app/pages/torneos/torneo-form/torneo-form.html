@@ -1,0 +1,169 @@
+<div class="torneo-form-container">
+
+    <!-- Header -->
+    <div class="form-header">
+        <a routerLink="/torneos" class="btn-back">← Volver a Torneos</a>
+        <div class="header-title">
+            <div class="header-icon">{{ isEditMode() ? '✏️' : '🏆' }}</div>
+            <div>
+                <h2>{{ isEditMode() ? 'Editar Torneo' : 'Configurar Nuevo Torneo' }}</h2>
+                <span class="header-subtitle">
+                    {{ isEditMode() ? 'Actualiza la configuración del torneo' : 'Define fechas, reglamento y categorías participantes' }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    @if (loadingData()) {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando datos del torneo...</p>
+        </div>
+    } @else {
+        <div class="form-card">
+
+            @if (errorMsg()) {
+                <div class="alert alert-error"><span>⚠️</span> {{ errorMsg() }}</div>
+            }
+            @if (successMsg()) {
+                <div class="alert alert-success"><span>✅</span> {{ successMsg() }}</div>
+            }
+
+            <form (ngSubmit)="onSubmit()" #torneoFormRef="ngForm">
+
+                <!-- ── Sección: Identificación del torneo ──────── -->
+                <div class="form-section">
+                    <h3 class="section-title">📋 Identificación del Torneo</h3>
+
+                    <div class="form-group">
+                        <label for="nombre_torneo">Nombre del Torneo <span class="required">*</span></label>
+                        <input
+                            id="nombre_torneo"
+                            type="text"
+                            [(ngModel)]="torneo.nombre_torneo"
+                            name="nombre_torneo"
+                            placeholder="Ej. Liga Primavera 2025 — Categoría Premier"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estatus">Estatus del Torneo</label>
+                        <div class="estatus-selector">
+                            @for (opt of estatusOptions; track opt) {
+                                <button
+                                    type="button"
+                                    class="estatus-btn"
+                                    [class.selected]="torneo.estatus === opt"
+                                    [class]="'estatus-btn estatus-btn-' + opt + (torneo.estatus === opt ? ' selected' : '')"
+                                    (click)="torneo.estatus = opt"
+                                >
+                                    @if (opt === 'Planificacion') { 📋 Planificación }
+                                    @else if (opt === 'Activo') { 🏆 Activo }
+                                    @else if (opt === 'Finalizado') { ✅ Finalizado }
+                                    @else { ❌ Cancelado }
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Sección: Temporada (fechas) ────────────── -->
+                <div class="form-section">
+                    <h3 class="section-title">📅 Configuración de la Temporada</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fecha_inicio">Fecha de Inicio <span class="required">*</span></label>
+                            <input
+                                id="fecha_inicio"
+                                type="date"
+                                [(ngModel)]="torneo.fecha_inicio"
+                                name="fecha_inicio"
+                                required
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha_fin">Fecha de Fin <span class="required">*</span></label>
+                            <input
+                                id="fecha_fin"
+                                type="date"
+                                [(ngModel)]="torneo.fecha_fin"
+                                name="fecha_fin"
+                                [min]="torneo.fecha_inicio"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Indicador de duración -->
+                    @if (torneo.fecha_inicio && torneo.fecha_fin && torneo.fecha_fin >= torneo.fecha_inicio) {
+                        <div class="duracion-preview">
+                            🗓️ Duración: <strong>{{ getDuracionDias() }} días</strong> de competición
+                        </div>
+                    }
+                </div>
+
+                <!-- ── Sección: Categorías participantes ──────── -->
+                <div class="form-section">
+                    <h3 class="section-title">🏅 Categorías Participantes</h3>
+                    <p class="section-hint">Selecciona las categorías que competirán en este torneo. Puedes elegir múltiples.</p>
+
+                    @if (categoriasDisponibles().length === 0) {
+                        <div class="no-categorias">
+                            <span>⚠️</span> No hay categorías activas registradas.
+                            <a routerLink="/categorias/nueva" target="_blank">Crear categoría</a>
+                        </div>
+                    } @else {
+                        <div class="categorias-selector">
+                            @for (cat of categoriasDisponibles(); track cat.id_categoria) {
+                                <button
+                                    type="button"
+                                    class="cat-toggle"
+                                    [class.selected]="isCategoriaSelected(cat.id_categoria!)"
+                                    (click)="toggleCategoria(cat.id_categoria!)"
+                                >
+                                    <span class="cat-check">{{ isCategoriaSelected(cat.id_categoria!) ? '✓' : '+' }}</span>
+                                    <div class="cat-info">
+                                        <span class="cat-nombre">{{ cat.nombre_categoria }}</span>
+                                        <span class="cat-edad">{{ cat.edad_minima }}–{{ cat.edad_maxima }} años</span>
+                                    </div>
+                                </button>
+                            }
+                        </div>
+                        @if (categoriasSeleccionadas().length > 0) {
+                            <div class="seleccionadas-count">
+                                ✅ {{ categoriasSeleccionadas().length }} categoría(s) seleccionada(s)
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- ── Sección: Reglamento ─────────────────────── -->
+                <div class="form-section">
+                    <h3 class="section-title">📄 Reglamento (opcional)</h3>
+                    <div class="form-group">
+                        <label for="reglamento">Reglas y disposiciones del torneo</label>
+                        <textarea
+                            id="reglamento"
+                            [(ngModel)]="torneo.reglamento"
+                            name="reglamento"
+                            rows="5"
+                            placeholder="Escribe aquí las reglas, disposiciones generales, criterios de desempate, etc."
+                        ></textarea>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="form-actions">
+                    <a routerLink="/torneos" class="btn btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn btn-submit" [disabled]="loading()">
+                        @if (loading()) { <span class="btn-spinner"></span> Guardando... }
+                        @else { {{ isEditMode() ? '💾 Guardar Cambios' : '🚀 Crear Torneo' }} }
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    }
+</div>

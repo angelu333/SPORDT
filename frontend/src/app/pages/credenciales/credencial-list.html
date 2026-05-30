@@ -1,0 +1,384 @@
+<div class="credenciales-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-title">
+            <div class="header-icon">🪪</div>
+            <div>
+                <h2>Credencialización Obligatoria</h2>
+                <span class="header-subtitle">Control operativo y financiero de futbolistas inscritos por temporada</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs Financieros y Operativos -->
+    <div class="kpi-grid">
+        <div class="kpi-card card-purple">
+            <div class="kpi-icon">🪪</div>
+            <div class="kpi-info">
+                <span class="kpi-label">Credenciales Emitidas</span>
+                <h3 class="kpi-value">{{ kpis().total }}</h3>
+                <span class="kpi-subtext">Total en el sistema</span>
+            </div>
+        </div>
+        <div class="kpi-card card-blue">
+            <div class="kpi-icon">💰</div>
+            <div class="kpi-info">
+                <span class="kpi-label">Ingreso Proyectado</span>
+                <h3 class="kpi-value">{{ kpis().proyectado | currency:'MXN':'symbol':'1.2-2' }}</h3>
+                <span class="kpi-subtext">Cargos automáticos ($100 c/u)</span>
+            </div>
+        </div>
+        <div class="kpi-card card-green">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-info">
+                <span class="kpi-label">Recaudación Cobrada</span>
+                <h3 class="kpi-value">{{ kpis().recaudado | currency:'MXN':'symbol':'1.2-2' }}</h3>
+                <span class="kpi-subtext">Cargos liquidados</span>
+            </div>
+        </div>
+        <div class="kpi-card card-orange">
+            <div class="kpi-icon">⏳</div>
+            <div class="kpi-info">
+                <span class="kpi-label">Pendiente de Cobro</span>
+                <h3 class="kpi-value">{{ kpis().pendiente | currency:'MXN':'symbol':'1.2-2' }}</h3>
+                <span class="kpi-subtext">Cargos en estatus pendiente</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertas de Sistema -->
+    @if (errorMsg()) {
+        <div class="alert alert-error"><span>⚠️</span> {{ errorMsg() }}</div>
+    }
+    @if (successMsg()) {
+        <div class="alert alert-success"><span>✅</span> {{ successMsg() }}</div>
+    }
+
+    <!-- Tabs de Navegación -->
+    <div class="tabs-container">
+        <button 
+            type="button" 
+            class="tab-btn" 
+            [class.active]="activeTab() === 'emision'"
+            (click)="activeTab.set('emision')"
+        >
+            ⚡ Control y Emisión Operativa
+        </button>
+        <button 
+            type="button" 
+            class="tab-btn" 
+            [class.active]="activeTab() === 'listado'"
+            (click)="activeTab.set('listado'); loadAllCredenciales()"
+        >
+            📋 Historial de Credenciales
+        </button>
+    </div>
+
+    <!-- Contenido: CONTROL Y EMISIÓN OPERATIVA -->
+    @if (activeTab() === 'emision') {
+        <div class="control-panel">
+            <!-- Barra de Selección Rápida -->
+            <div class="filter-bar selection-panel">
+                <div class="filter-group select-wrapper">
+                    <label for="select-torneo">🏆 Torneo / Temporada</label>
+                    <select 
+                        id="select-torneo" 
+                        [(ngModel)]="selectedTorneoId" 
+                        (ngModelChange)="onSelectionChange()"
+                        class="form-select"
+                    >
+                        <option [value]="null" disabled>-- Selecciona un Torneo --</option>
+                        @for (t of torneos(); track t.id_torneo) {
+                            <option [value]="t.id_torneo">{{ t.nombre_torneo }} ({{ t.estatus }})</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="filter-group select-wrapper">
+                    <label for="select-equipo">🛡️ Equipo Externo</label>
+                    <select 
+                        id="select-equipo" 
+                        [(ngModel)]="selectedEquipoId" 
+                        (ngModelChange)="onSelectionChange()"
+                        class="form-select"
+                    >
+                        <option [value]="null" disabled>-- Selecciona un Equipo --</option>
+                        @for (e of equipos(); track e.id_equipo) {
+                            <option [value]="e.id_equipo">{{ e.nombre_equipo }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Listado de la Plantilla -->
+            @if (loadingRoster()) {
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Consultando plantilla de jugadores y estatus de credenciales...</p>
+                </div>
+            } @else {
+                @if (roster().length === 0) {
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <h4>Sin futbolistas en la plantilla</h4>
+                        <p>No se encontraron jugadores activos en este equipo. Registra jugadores en el módulo de Equipos primero.</p>
+                        @if (selectedEquipoId()) {
+                            <a [routerLink]="['/equipos', selectedEquipoId()]" class="btn btn-primary">
+                                Ir a Gestionar Plantilla del Equipo
+                            </a>
+                        }
+                    </div>
+                } @else {
+                    <div class="roster-card">
+                        <div class="card-header-roster">
+                            <h4>Plantilla de Jugadores — Registro de Credencialización</h4>
+                            <span class="badge-count">{{ roster().length }} Jugadores</span>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="roster-table">
+                                <thead>
+                                    <tr>
+                                        <th>Dorsal & Jugador</th>
+                                        <th>CURP</th>
+                                        <th>Estatus Credencial</th>
+                                        <th>Estatus Pago Cargo ($100)</th>
+                                        <th class="text-right">Acción Operativa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (jugador of roster(); track jugador.id_jugador) {
+                                        <tr>
+                                            <!-- Jugador & Dorsal -->
+                                            <td>
+                                                <div class="jugador-cell">
+                                                    <span class="dorsal-badge">{{ jugador.numero_dorsal ?? '—' }}</span>
+                                                    <div>
+                                                        <span class="jugador-name">{{ jugador.nombre_completo }}</span>
+                                                        <span class="jugador-sub">Registrado el: {{ jugador.fecha_registro | date:'dd/MM/yyyy' }}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            
+                                            <!-- CURP -->
+                                            <td>
+                                                <span class="curp-badge">{{ jugador.curp ?? 'Sin CURP' }}</span>
+                                            </td>
+                                            
+                                            <!-- Estatus Credencial -->
+                                            <td>
+                                                @if (jugador.id_credencial) {
+                                                    <span class="badge {{ getEstatusCredencialClass(jugador.estatus_credencial) }}">
+                                                        {{ jugador.estatus_credencial }}
+                                                    </span>
+                                                    <div class="cred-code">{{ jugador.codigo_credencial }}</div>
+                                                } @else {
+                                                    <span class="badge cred-ninguna">No Emitida</span>
+                                                }
+                                            </td>
+                                            
+                                            <!-- Estatus Pago -->
+                                            <td>
+                                                @if (jugador.id_credencial) {
+                                                    <div class="pago-cell">
+                                                        <span class="badge {{ getEstatusPagoClass(jugador.estatus_pago_cargo) }}">
+                                                            {{ jugador.estatus_pago_cargo ?? 'Pendiente' }}
+                                                        </span>
+                                                        <span class="pago-amount">$100.00 MXN</span>
+                                                    </div>
+                                                } @else {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                            
+                                            <!-- Acciones -->
+                                            <td class="text-right">
+                                                @if (!jugador.id_credencial) {
+                                                    <button 
+                                                        type="button" 
+                                                        class="btn-emitir"
+                                                        (click)="emitirCredencial(jugador)"
+                                                        [disabled]="savingJugadorId() === jugador.id_jugador"
+                                                    >
+                                                        @if (savingJugadorId() === jugador.id_jugador) {
+                                                            <span class="spinner-btn"></span> Generando...
+                                                        } @else {
+                                                            ⚡ Emitir Credencial
+                                                        }
+                                                    </button>
+                                                } @else {
+                                                    <div class="action-dropdown-wrapper">
+                                                        <select 
+                                                            [ngModel]="jugador.estatus_credencial" 
+                                                            (ngModelChange)="cambiarEstatus(jugador.id_credencial!, $event)"
+                                                            class="select-action"
+                                                            [disabled]="updatingCredencialId() === jugador.id_credencial"
+                                                        >
+                                                            <option value="Activa">🟢 Activa</option>
+                                                            <option value="Inactiva">🔴 Inactiva</option>
+                                                            <option value="Vencida">🟡 Vencida</option>
+                                                        </select>
+                                                    </div>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+
+    <!-- Contenido: HISTORIAL GENERAL DE CREDENCIALES -->
+    @if (activeTab() === 'listado') {
+        <div class="history-panel">
+            <!-- Barra de Filtros de Historial -->
+            <div class="filter-bar history-filters">
+                <div class="filter-group search-box">
+                    <label for="history-search">Buscar Credencial</label>
+                    <input 
+                        id="history-search" 
+                        type="text" 
+                        [(ngModel)]="generalSearch" 
+                        placeholder="Buscar por jugador, código, CURP o equipo..."
+                        class="form-control"
+                    />
+                </div>
+
+                <div class="filter-group select-wrapper">
+                    <label for="filter-estatus">Estatus Credencial</label>
+                    <select 
+                        id="filter-estatus" 
+                        [(ngModel)]="generalEstatus" 
+                        class="form-select"
+                    >
+                        <option value="">Todos los estatus</option>
+                        <option value="Activa">Activa</option>
+                        <option value="Inactiva">Inactiva</option>
+                        <option value="Vencida">Vencida</option>
+                    </select>
+                </div>
+
+                <div class="filter-group select-wrapper">
+                    <label for="filter-torneo">Filtrar por Torneo</label>
+                    <select 
+                        id="filter-torneo" 
+                        [(ngModel)]="generalTorneo" 
+                        class="form-select"
+                    >
+                        <option value="">Todos los torneos</option>
+                        @for (t of torneos(); track t.id_torneo) {
+                            <option [value]="t.nombre_torneo">{{ t.nombre_torneo }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Listado de Credenciales Emitidas -->
+            @if (loadingCredenciales()) {
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Cargando base de datos de credenciales...</p>
+                </div>
+            } @else {
+                @if (filteredCredenciales().length === 0) {
+                    <div class="empty-state">
+                        <div class="empty-icon">🪪</div>
+                        <h4>No se encontraron credenciales</h4>
+                        <p>No hay credenciales emitidas que coincidan con los criterios de búsqueda.</p>
+                    </div>
+                } @else {
+                    <div class="history-card">
+                        <div class="card-header-roster flex-between">
+                            <h4>Registro Histórico de Emisión</h4>
+                            <span class="badge-count">{{ filteredCredenciales().length }} Credenciales encontradas</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="roster-table">
+                                <thead>
+                                    <tr>
+                                        <th>Código & Emisión</th>
+                                        <th>Jugador (CURP)</th>
+                                        <th>Equipo & Torneo</th>
+                                        <th>Costo & Cargo</th>
+                                        <th>Estatus</th>
+                                        <th class="text-right">Estatus de Cobro</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (cred of filteredCredenciales(); track cred.id_credencial) {
+                                        <tr>
+                                            <!-- Código & Emisión -->
+                                            <td>
+                                                <div class="code-wrapper">
+                                                    <span class="code-text">{{ cred.codigo_credencial }}</span>
+                                                    <span class="emitted-date">Emitido: {{ cred.fecha_emision | date:'dd/MM/yyyy HH:mm' }}</span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Jugador & CURP -->
+                                            <td>
+                                                <div class="player-wrapper">
+                                                    <span class="player-name">{{ cred.nombre_jugador }}</span>
+                                                    <span class="curp-badge">{{ cred.curp_jugador ?? 'Sin CURP' }}</span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Equipo & Torneo -->
+                                            <td>
+                                                <div class="tournament-wrapper">
+                                                    <span class="team-label">🛡️ {{ cred.nombre_equipo }}</span>
+                                                    <span class="tournament-label">🏆 {{ cred.nombre_torneo }}</span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Costo -->
+                                            <td>
+                                                <div class="cost-wrapper">
+                                                    <span class="cost-value">{{ cred.costo | currency:'MXN':'symbol':'1.2-2' }}</span>
+                                                    @if (cred.id_cargo) {
+                                                        <span class="cargo-tag">ID Cargo: #{{ cred.id_cargo }}</span>
+                                                    }
+                                                </div>
+                                            </td>
+
+                                            <!-- Estatus Credencial -->
+                                            <td>
+                                                <div class="action-dropdown-wrapper">
+                                                    <select 
+                                                        [ngModel]="cred.estatus" 
+                                                        (ngModelChange)="cambiarEstatus(cred.id_credencial!, $event)"
+                                                        class="select-action"
+                                                        [class.active-style]="cred.estatus === 'Activa'"
+                                                        [disabled]="updatingCredencialId() === cred.id_credencial"
+                                                    >
+                                                        <option value="Activa">🟢 Activa</option>
+                                                        <option value="Inactiva">🔴 Inactiva</option>
+                                                        <option value="Vencida">🟡 Vencida</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+
+                                            <!-- Estatus Pago Cargo -->
+                                            <td class="text-right">
+                                                <span class="badge {{ getEstatusPagoClass(cred.estatus_pago_cargo) }}">
+                                                    {{ cred.estatus_pago_cargo ?? 'Pendiente' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+
+</div>

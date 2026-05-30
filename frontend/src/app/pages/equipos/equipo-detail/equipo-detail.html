@@ -1,0 +1,171 @@
+<div class="equipo-detail-container">
+
+    @if (loading()) {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando equipo...</p>
+        </div>
+    } @else if (errorMsg()) {
+        <div class="alert alert-error">
+            <span>⚠️</span> {{ errorMsg() }}
+            <a routerLink="/equipos" class="btn btn-secondary">Volver</a>
+        </div>
+    } @else if (equipo()) {
+
+        <!-- Header del equipo -->
+        <div class="detail-header">
+            <a routerLink="/equipos" class="btn-back">← Volver a Equipos</a>
+            <div class="team-hero">
+                <!-- Escudo -->
+                <div class="hero-escudo">
+                    @if (equipo()!.escudo) {
+                        <img [src]="equipo()!.escudo!" [alt]="equipo()!.nombre_equipo" class="hero-escudo-img" />
+                    } @else {
+                        <div class="hero-escudo-placeholder">{{ getInitials(equipo()!.nombre_equipo) }}</div>
+                    }
+                </div>
+                <!-- Info del equipo -->
+                <div class="hero-info">
+                    <h2>{{ equipo()!.nombre_equipo }}</h2>
+                    <div class="hero-meta">
+                        <span>👤 {{ equipo()!.nombre_delegado }}</span>
+                        <span>📱 {{ equipo()!.telefono_delegado }}</span>
+                        <span>📅 Inscrito: {{ equipo()!.fecha_inscripcion | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-chip">
+                            <span class="stat-number">{{ equipo()!.jugadores?.length ?? 0 }}</span>
+                            <span class="stat-label">Jugadores</span>
+                        </div>
+                        <div class="stat-chip stat-chip-warning">
+                            <span class="stat-number">{{ cargosPendientesCount() }}</span>
+                            <span class="stat-label">Cargos Pendientes</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Acciones -->
+                <div class="hero-actions">
+                    <a [routerLink]="['/equipos/editar', equipo()!.id_equipo]" class="btn btn-edit-team">✏️ Editar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn" [class.active]="activeTab() === 'plantilla'" (click)="activeTab.set('plantilla')">
+                ⚽ Plantilla de Jugadores <span class="tab-count">{{ equipo()!.jugadores?.length ?? 0 }}</span>
+            </button>
+            <button class="tab-btn" [class.active]="activeTab() === 'cargos'" (click)="activeTab.set('cargos')">
+                💰 Cargos Financieros <span class="tab-count">{{ equipo()!.cargos?.length ?? 0 }}</span>
+            </button>
+        </div>
+
+        <!-- ── TAB: PLANTILLA ─────────────────────────────── -->
+        @if (activeTab() === 'plantilla') {
+            <div class="tab-panel">
+                <div class="tab-panel-header">
+                    <span class="panel-title">Jugadores registrados en la plantilla</span>
+                    <button class="btn btn-primary" (click)="openAddJugador()">＋ Agregar Jugador</button>
+                </div>
+
+                @if (!equipo()!.jugadores || equipo()!.jugadores!.length === 0) {
+                    <div class="empty-state">
+                        <div class="empty-icon">⚽</div>
+                        <h3>Plantilla vacía</h3>
+                        <p>Aún no hay jugadores registrados para este equipo.</p>
+                        <button class="btn btn-primary" (click)="openAddJugador()">Agregar primer jugador</button>
+                    </div>
+                } @else {
+                    <div class="players-grid">
+                        @for (jugador of equipo()!.jugadores!; track jugador.id_jugador) {
+                            <div class="player-card">
+                                <div class="player-dorsal">
+                                    {{ jugador.numero_dorsal ?? '—' }}
+                                </div>
+                                <div class="player-info">
+                                    <span class="player-name">{{ jugador.nombre_completo }}</span>
+                                    <span class="player-curp">{{ jugador.curp || 'Sin CURP' }}</span>
+                                </div>
+                                <button class="btn-remove-player" (click)="removeJugador(jugador)" title="Dar de baja">🗑️</button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- ── TAB: CARGOS ────────────────────────────────── -->
+        @if (activeTab() === 'cargos') {
+            <div class="tab-panel">
+                <div class="tab-panel-header">
+                    <span class="panel-title">Historial de cargos financieros del equipo</span>
+                </div>
+
+                @if (!equipo()!.cargos || equipo()!.cargos!.length === 0) {
+                    <div class="empty-state">
+                        <div class="empty-icon">💰</div>
+                        <h3>Sin cargos registrados</h3>
+                        <p>No se han generado cargos financieros para este equipo todavía.</p>
+                    </div>
+                } @else {
+                    <div class="cargos-list">
+                        @for (cargo of equipo()!.cargos!; track cargo.id_cargo) {
+                            <div class="cargo-item">
+                                <div class="cargo-concepto">
+                                    <span class="cargo-icon">💳</span>
+                                    <div>
+                                        <span class="cargo-nombre">{{ cargo.concepto }}</span>
+                                        <span class="cargo-fecha">Vence: {{ cargo.fecha_vencimiento | date:'dd/MM/yyyy' }}</span>
+                                    </div>
+                                </div>
+                                <div class="cargo-monto-group">
+                                    <span class="cargo-monto">{{ cargo.monto_total | currency:'MXN':'symbol-narrow' }}</span>
+                                    <span class="badge" [ngClass]="getEstatusClass(cargo.estatus_pago)">{{ cargo.estatus_pago }}</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    }
+
+    <!-- Modal: Agregar Jugador -->
+    @if (showAddJugador()) {
+        <div class="modal-overlay" (click)="showAddJugador.set(false)">
+            <div class="modal-card" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h3>⚽ Agregar Jugador a la Plantilla</h3>
+                    <button class="modal-close" (click)="showAddJugador.set(false)">✕</button>
+                </div>
+                @if (addJugadorError()) {
+                    <div class="alert alert-error"><span>⚠️</span> {{ addJugadorError() }}</div>
+                }
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="jug-nombre">Nombre Completo <span class="required">*</span></label>
+                        <input id="jug-nombre" type="text" [(ngModel)]="nuevoJugador.nombre_completo" placeholder="Nombre completo del jugador" />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="jug-curp">CURP (opcional)</label>
+                            <input id="jug-curp" type="text" [(ngModel)]="nuevoJugador.curp" placeholder="18 caracteres" maxlength="18" />
+                        </div>
+                        <div class="form-group">
+                            <label for="jug-dorsal">Número Dorsal (opcional)</label>
+                            <input id="jug-dorsal" type="number" [(ngModel)]="nuevoJugador.numero_dorsal" placeholder="Ej. 10" min="1" max="99" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" (click)="showAddJugador.set(false)">Cancelar</button>
+                    <button class="btn btn-primary" (click)="saveJugador()" [disabled]="savingJugador()">
+                        @if (savingJugador()) { <span class="btn-spinner"></span> Guardando... }
+                        @else { ✅ Agregar Jugador }
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

@@ -16,6 +16,10 @@ const tutoresRoutes = require('./routes/tutores.routes');
 const categoriasRoutes = require('./routes/categorias.routes');
 const alumnosRoutes = require('./routes/alumnos.routes');
 const cargosRoutes = require('./routes/cargos.routes');
+const equiposRoutes = require('./routes/equipos.routes');
+const torneosRoutes = require('./routes/torneos.routes');
+const credencialesRoutes = require('./routes/credenciales.routes');
+
 
 // Importar motor de cobranza
 const {
@@ -29,7 +33,8 @@ const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // ────────────────────────────────────────────────────────────
 // Ruta raíz de verificación
@@ -44,6 +49,9 @@ app.get('/', (req, res) => {
             'GET /api/categorias',
             'GET /api/alumnos',
             'GET /api/cargos',
+            'GET /api/equipos',
+            'GET /api/torneos',
+            'GET /api/credenciales',
             'POST /api/motor/mensualidades',
             'POST /api/motor/vencimientos'
         ]
@@ -57,6 +65,10 @@ app.use('/api/tutores', tutoresRoutes);
 app.use('/api/categorias', categoriasRoutes);
 app.use('/api/alumnos', alumnosRoutes);
 app.use('/api/cargos', cargosRoutes);
+app.use('/api/equipos', equiposRoutes);
+app.use('/api/torneos', torneosRoutes);
+app.use('/api/credenciales', credencialesRoutes);
+
 
 // ────────────────────────────────────────────────────────────
 // Endpoints de prueba manual del motor de cobranza
