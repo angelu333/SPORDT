@@ -95,26 +95,58 @@ CREATE TABLE alumnos (
 );
 
 -- ============================================================
--- 6. EQUIPOS EXTERNOS (Módulo de liga - compañeros de Ángel)
--- Sin cambios, se respeta el diseño original.
+-- 6. EQUIPOS EXTERNOS (Módulo de liga - César Ley)
 -- ============================================================
 CREATE TABLE equipos_externos (
     id_equipo INT AUTO_INCREMENT PRIMARY KEY,
     nombre_equipo VARCHAR(100) NOT NULL,
     nombre_delegado VARCHAR(150) NOT NULL,
-    telefono_delegado VARCHAR(20) NOT NULL
+    telefono_delegado VARCHAR(20) NOT NULL,
+    escudo LONGTEXT NULL COMMENT 'Escudo/Logo del club en formato Base64',
+    fecha_inscripcion DATE NOT NULL DEFAULT (CURRENT_DATE),
+    activo TINYINT(1) NOT NULL DEFAULT 1
 );
 
 -- ============================================================
--- 7. TORNEOS (Módulo de liga - compañeros de Ángel)
--- Mejora menor: ENUM para estatus en vez de VARCHAR libre.
+-- 6b. JUGADORES EXTERNOS (Plantillas de Equipos - César Ley)
+-- ============================================================
+CREATE TABLE jugadores_externos (
+    id_jugador INT AUTO_INCREMENT PRIMARY KEY,
+    id_equipo INT NOT NULL,
+    nombre_completo VARCHAR(150) NOT NULL,
+    curp VARCHAR(18) NULL UNIQUE COMMENT 'Clave Única de Registro de Población',
+    numero_dorsal INT NULL,
+    activo TINYINT(1) NOT NULL DEFAULT 1,
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (id_equipo) REFERENCES equipos_externos(id_equipo)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+        
+    INDEX idx_jugador_equipo (id_equipo)
+);
+
+
+-- ============================================================
+-- 7. TORNEOS (Módulo de liga - César Ley)
 -- ============================================================
 CREATE TABLE torneos (
     id_torneo INT AUTO_INCREMENT PRIMARY KEY,
     nombre_torneo VARCHAR(100) NOT NULL,
     fecha_inicio DATE NOT NULL,
     fecha_fin DATE NOT NULL,
+    reglamento TEXT NULL COMMENT 'Reglamento general del torneo',
     estatus ENUM('Planificacion', 'En curso', 'Finalizado', 'Cancelado') NOT NULL DEFAULT 'Planificacion'
+);
+
+-- ============================================================
+-- 7b. CATEGORÍAS POR TORNEO (César Ley)
+-- ============================================================
+CREATE TABLE torneo_categorias (
+    id_torneo INT NOT NULL,
+    id_categoria INT NOT NULL,
+    PRIMARY KEY (id_torneo, id_categoria),
+    FOREIGN KEY (id_torneo) REFERENCES torneos(id_torneo) ON DELETE CASCADE,
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria) ON DELETE RESTRICT
 );
 
 -- ============================================================
@@ -160,6 +192,31 @@ CREATE TABLE historial_abonos (
 
     INDEX idx_abono_cargo (id_cargo)
 );
+
+-- ============================================================
+-- 10. CREDENCIALES (Credencialización Obligatoria - César Ley)
+-- ============================================================
+CREATE TABLE credenciales (
+    id_credencial INT AUTO_INCREMENT PRIMARY KEY,
+    id_jugador INT NOT NULL,
+    id_torneo INT NOT NULL,
+    codigo_credencial VARCHAR(50) NOT NULL UNIQUE COMMENT 'Código único autogenerado',
+    costo DECIMAL(10,2) NOT NULL DEFAULT 100.00,
+    id_cargo INT NULL COMMENT 'Vinculación con el cargo financiero generado',
+    estatus ENUM('Activa', 'Inactiva', 'Vencida') NOT NULL DEFAULT 'Activa',
+    fecha_emision TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ 
+    FOREIGN KEY (id_jugador) REFERENCES jugadores_externos(id_jugador)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (id_torneo) REFERENCES torneos(id_torneo)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (id_cargo) REFERENCES cargos_financieros(id_cargo)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+ 
+    INDEX idx_credencial_jugador (id_jugador),
+    INDEX idx_credencial_torneo (id_torneo)
+);
+
 
 
 -- ============================================================

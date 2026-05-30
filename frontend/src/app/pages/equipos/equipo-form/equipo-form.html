@@ -1,0 +1,150 @@
+<div class="equipo-form-container">
+    <!-- Header -->
+    <div class="form-header">
+        <a routerLink="/equipos" class="btn-back">← Volver a Equipos</a>
+        <div class="header-title">
+            <div class="header-icon">{{ isEditMode() ? '✏️' : '🏟️' }}</div>
+            <div>
+                <h2>{{ isEditMode() ? 'Editar Equipo' : 'Registrar Equipo Externo' }}</h2>
+                <span class="header-subtitle">
+                    {{ isEditMode() ? 'Actualiza la información del club' : 'Alta de nuevo club en la liga' }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    @if (loadingData()) {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando datos del equipo...</p>
+        </div>
+    } @else {
+        <div class="form-card">
+
+            <!-- Mensajes de feedback -->
+            @if (errorMsg()) {
+                <div class="alert alert-error">
+                    <span>⚠️</span> {{ errorMsg() }}
+                </div>
+            }
+            @if (successMsg()) {
+                <div class="alert alert-success">
+                    <span>✅</span> {{ successMsg() }}
+                </div>
+            }
+
+            <!-- Aviso de cargo automático (solo en modo creación) -->
+            @if (!isEditMode()) {
+                <div class="alert alert-info">
+                    <span>💰</span> Al registrar el equipo, se generará automáticamente un <strong>cargo de inscripción de $500.00 MXN</strong> pendiente de pago.
+                </div>
+            }
+
+            <form (ngSubmit)="onSubmit()" #equipoFormRef="ngForm">
+
+                <!-- Sección de escudo -->
+                <div class="form-section">
+                    <h3 class="section-title">🛡️ Escudo del Club</h3>
+                    <div class="escudo-uploader">
+                        <!-- Preview -->
+                        <div class="escudo-preview-area">
+                            @if (escudoPreview()) {
+                                <img [src]="escudoPreview()" alt="Escudo" class="escudo-preview-img" />
+                                <button type="button" class="btn-remove-escudo" (click)="removeEscudo()" title="Quitar escudo">✕</button>
+                            } @else {
+                                <div class="escudo-placeholder-upload">
+                                    <span class="upload-icon">🏆</span>
+                                    <span class="upload-hint">Sin escudo</span>
+                                </div>
+                            }
+                        </div>
+                        <!-- Input de archivo -->
+                        <div class="escudo-upload-actions">
+                            <label for="escudo-input" class="btn btn-upload">
+                                📁 {{ escudoPreview() ? 'Cambiar escudo' : 'Subir escudo' }}
+                            </label>
+                            <input
+                                id="escudo-input"
+                                type="file"
+                                accept="image/png, image/jpeg, image/svg+xml, image/webp"
+                                (change)="onEscudoChange($event)"
+                                style="display: none;"
+                            />
+                            <span class="upload-format-hint">PNG, JPG o SVG. Máx. 500 KB.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de datos del equipo -->
+                <div class="form-section">
+                    <h3 class="section-title">📋 Datos del Club</h3>
+
+                    <div class="form-group">
+                        <label for="nombre_equipo">Nombre del Equipo <span class="required">*</span></label>
+                        <input
+                            id="nombre_equipo"
+                            type="text"
+                            [(ngModel)]="equipo.nombre_equipo"
+                            name="nombre_equipo"
+                            placeholder="Ej. Club Deportivo Tigres FC"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha_inscripcion">Fecha de Inscripción <span class="required">*</span></label>
+                        <input
+                            id="fecha_inscripcion"
+                            type="date"
+                            [(ngModel)]="equipo.fecha_inscripcion"
+                            name="fecha_inscripcion"
+                        />
+                    </div>
+                </div>
+
+                <!-- Sección de delegado -->
+                <div class="form-section">
+                    <h3 class="section-title">👤 Representante / Delegado</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre_delegado">Nombre del Delegado <span class="required">*</span></label>
+                            <input
+                                id="nombre_delegado"
+                                type="text"
+                                [(ngModel)]="equipo.nombre_delegado"
+                                name="nombre_delegado"
+                                placeholder="Nombre completo del delegado"
+                                required
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono_delegado">Teléfono de Contacto <span class="required">*</span></label>
+                            <input
+                                id="telefono_delegado"
+                                type="tel"
+                                [(ngModel)]="equipo.telefono_delegado"
+                                name="telefono_delegado"
+                                placeholder="Ej. 999-123-4567"
+                                required
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="form-actions">
+                    <a routerLink="/equipos" class="btn btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn btn-submit" [disabled]="loading()">
+                        @if (loading()) {
+                            <span class="btn-spinner"></span> Guardando...
+                        } @else {
+                            {{ isEditMode() ? '💾 Guardar Cambios' : '✅ Registrar Equipo' }}
+                        }
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    }
+</div>

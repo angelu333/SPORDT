@@ -1,0 +1,149 @@
+<div class="torneo-list-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-title">
+            <div class="header-icon">🏆</div>
+            <div>
+                <h2>Torneos y Temporadas</h2>
+                <span class="header-subtitle">Liga externa — configuración y gestión de torneos</span>
+            </div>
+        </div>
+        <a routerLink="/torneos/nuevo" class="btn btn-primary">＋ Nuevo Torneo</a>
+    </div>
+
+    <!-- Filtros -->
+    @if (!loading() && !errorMsg() && torneos().length > 0) {
+        <div class="filters-bar">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input
+                    id="busqueda-torneo"
+                    type="text"
+                    [(ngModel)]="busqueda"
+                    placeholder="Buscar torneo..."
+                    autocomplete="off"
+                />
+                @if (busqueda()) {
+                    <button class="btn-clear" (click)="busqueda.set('')">✕</button>
+                }
+            </div>
+            <select id="filtro-estatus" [(ngModel)]="filtroEstatus" class="select-filter">
+                <option value="">Todos los estatus</option>
+                <option value="Planificacion">📋 Planificación</option>
+                <option value="Activo">🏆 Activo</option>
+                <option value="Finalizado">✅ Finalizado</option>
+                <option value="Cancelado">❌ Cancelado</option>
+            </select>
+        </div>
+    }
+
+    <!-- Carga -->
+    @if (loading()) {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando torneos...</p>
+        </div>
+    }
+
+    <!-- Error -->
+    @if (errorMsg()) {
+        <div class="alert alert-error">
+            <span>⚠️</span>
+            <p>{{ errorMsg() }}</p>
+            <button (click)="loadTorneos()" class="btn btn-secondary">Reintentar</button>
+        </div>
+    }
+
+    <!-- Contenido -->
+    @if (!loading() && !errorMsg()) {
+        @if (torneos().length === 0) {
+            <div class="empty-state">
+                <div class="empty-icon">🏟️</div>
+                <h3>Aún no hay torneos configurados</h3>
+                <p>Registra el primer torneo de la liga para comenzar.</p>
+                <a routerLink="/torneos/nuevo" class="btn btn-primary">Configurar primer torneo</a>
+            </div>
+        } @else if (torneosFiltrados().length === 0) {
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>Sin resultados</h3>
+                <p>Ningún torneo coincide con los filtros aplicados.</p>
+                <button class="btn btn-secondary" (click)="busqueda.set(''); filtroEstatus.set('')">Limpiar filtros</button>
+            </div>
+        } @else {
+            <div class="results-info">
+                Mostrando <strong>{{ torneosFiltrados().length }}</strong> de <strong>{{ torneos().length }}</strong> torneo(s)
+            </div>
+
+            <!-- Grid de torneos -->
+            <div class="torneos-grid">
+                @for (torneo of torneosFiltrados(); track torneo.id_torneo) {
+                    <div class="torneo-card" [class]="'card-estatus-' + (torneo.estatus ?? 'Planificacion')">
+
+                        <!-- Top: estatus + nombre -->
+                        <div class="card-top">
+                            <span class="badge" [class]="getEstatusClass(torneo.estatus)">
+                                {{ getEstatusIcon(torneo.estatus) }} {{ torneo.estatus ?? 'Planificación' }}
+                            </span>
+                            <div class="card-actions-top">
+                                <button (click)="editTorneo(torneo.id_torneo!)" class="btn-icon" title="Editar">✏️</button>
+                                <button (click)="deleteTorneo(torneo)" class="btn-icon btn-icon-danger" title="Eliminar">🗑️</button>
+                            </div>
+                        </div>
+
+                        <!-- Nombre del torneo -->
+                        <h3 class="torneo-nombre">{{ torneo.nombre_torneo }}</h3>
+
+                        <!-- Fechas -->
+                        <div class="torneo-fechas">
+                            <div class="fecha-item">
+                                <span class="fecha-label">Inicio</span>
+                                <span class="fecha-valor">{{ torneo.fecha_inicio | date:'dd MMM yyyy' }}</span>
+                            </div>
+                            <div class="fecha-divider">→</div>
+                            <div class="fecha-item">
+                                <span class="fecha-label">Fin</span>
+                                <span class="fecha-valor">{{ torneo.fecha_fin | date:'dd MMM yyyy' }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Duración -->
+                        <div class="duracion-chip">
+                            🗓️ {{ getDuracionDias(torneo.fecha_inicio, torneo.fecha_fin) }} días de competición
+                        </div>
+
+                        <!-- Categorías -->
+                        <div class="categorias-list">
+                            <span class="categorias-label">Categorías:</span>
+                            @if (torneo.categorias && torneo.categorias.length > 0) {
+                                <div class="categorias-chips">
+                                    @for (cat of torneo.categorias; track cat.id_categoria) {
+                                        <span class="cat-chip">{{ cat.nombre_categoria }}</span>
+                                    }
+                                </div>
+                            } @else if (torneo.nombres_categorias) {
+                                <div class="categorias-chips">
+                                    @for (cat of torneo.nombres_categorias.split(','); track $index) {
+                                        <span class="cat-chip">{{ cat.trim() }}</span>
+                                    }
+                                </div>
+                            } @else {
+                                <span class="sin-categorias">Sin categorías asignadas</span>
+                            }
+                        </div>
+
+                        <!-- Reglamento -->
+                        @if (torneo.reglamento) {
+                            <div class="reglamento-preview">
+                                <span class="reglamento-icon">📄</span>
+                                <span class="reglamento-text">{{ torneo.reglamento }}</span>
+                            </div>
+                        }
+
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>

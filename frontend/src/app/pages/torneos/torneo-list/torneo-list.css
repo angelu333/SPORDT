@@ -1,0 +1,131 @@
+/* ── Layout ─────────────────────────────────────────────── */
+.torneo-list-container { padding: 1.5rem; }
+
+/* ── Header ─────────────────────────────────────────────── */
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.header-title { display: flex; align-items: center; gap: 1rem; }
+.header-icon { font-size: 2rem; line-height: 1; }
+.header-title h2 { margin: 0 0 0.2rem 0; font-size: 1.5rem; font-weight: 700; color: #1e293b; }
+.header-subtitle { font-size: 0.8rem; color: #64748b; }
+
+/* ── Botones ─────────────────────────────────────────────── */
+.btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 1.1rem; border-radius: 8px; border: none;
+    cursor: pointer; font-size: 0.875rem; font-weight: 600;
+    text-decoration: none; transition: all 0.2s ease; white-space: nowrap;
+}
+.btn-primary { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: #fff; box-shadow: 0 2px 8px rgba(124,58,237,0.3); }
+.btn-primary:hover { background: linear-gradient(135deg, #6d28d9, #4c1d95); transform: translateY(-1px); }
+.btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.btn-secondary:hover { background: #e2e8f0; }
+
+/* ── Filtros ─────────────────────────────────────────────── */
+.filters-bar {
+    display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+}
+.search-bar {
+    flex: 1; min-width: 200px;
+    display: flex; align-items: center; gap: 0.5rem;
+    background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px;
+    padding: 0.55rem 0.9rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: border-color 0.2s;
+}
+.search-bar:focus-within { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+.search-icon { font-size: 1rem; color: #94a3b8; flex-shrink: 0; }
+.search-bar input { border: none; outline: none; font-size: 0.875rem; color: #1e293b; flex: 1; background: transparent; }
+.btn-clear { background: none; border: none; cursor: pointer; font-size: 0.85rem; color: #94a3b8; padding: 0.1rem 0.3rem; border-radius: 4px; }
+.btn-clear:hover { color: #ef4444; background: #fee2e2; }
+
+.select-filter {
+    padding: 0.55rem 0.9rem; border: 1.5px solid #e2e8f0; border-radius: 10px;
+    font-size: 0.875rem; color: #1e293b; background: #fff;
+    cursor: pointer; outline: none; transition: border-color 0.2s;
+    min-width: 180px;
+}
+.select-filter:focus { border-color: #7c3aed; }
+
+/* ── Loading / Error / Empty ─────────────────────────────── */
+.loading-state { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 4rem 1rem; color: #64748b; }
+.spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #7c3aed; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.alert { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1.5rem; border-radius: 10px; text-align: center; }
+.alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 4rem 1rem; text-align: center; color: #64748b; }
+.empty-icon { font-size: 3.5rem; }
+.empty-state h3 { margin: 0; font-size: 1.1rem; color: #334155; }
+.empty-state p { margin: 0; font-size: 0.875rem; }
+
+/* ── Results info ────────────────────────────────────────── */
+.results-info { font-size: 0.78rem; color: #94a3b8; margin-bottom: 1rem; }
+.results-info strong { color: #475569; }
+
+/* ── Torneos Grid ────────────────────────────────────────── */
+.torneos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+
+/* ── Torneo Card ─────────────────────────────────────────── */
+.torneo-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1.5px solid #e2e8f0;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.25s ease;
+    border-top: 4px solid #e2e8f0;
+}
+
+.torneo-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.1); }
+
+/* Colores por estatus */
+.card-estatus-Planificacion { border-top-color: #f59e0b; }
+.card-estatus-Activo        { border-top-color: #10b981; }
+.card-estatus-Finalizado    { border-top-color: #64748b; }
+.card-estatus-Cancelado     { border-top-color: #ef4444; }
+
+/* ── Top de card ─────────────────────────────────────────── */
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+
+/* ── Badges ──────────────────────────────────────────────── */
+.badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+.badge-planning  { background: #fef9c3; color: #92400e; }
+.badge-active    { background: #d1fae5; color: #065f46; }
+.badge-finished  { background: #f1f5f9; color: #475569; }
+.badge-cancelled { background: #fee2e2; color: #991b1b; }
+
+/* ── Acciones top ────────────────────────────────────────── */
+.card-actions-top { display: flex; gap: 0.25rem; }
+.btn-icon { background: transparent; border: 1px solid transparent; border-radius: 6px; cursor: pointer; font-size: 1rem; padding: 0.3rem 0.45rem; transition: all 0.2s; }
+.btn-icon:hover { background: #eff6ff; border-color: #bfdbfe; }
+.btn-icon-danger:hover { background: #fef2f2; border-color: #fecaca; }
+
+/* ── Nombre ──────────────────────────────────────────────── */
+.torneo-nombre { margin: 0; font-size: 1.05rem; font-weight: 700; color: #1e293b; line-height: 1.3; }
+
+/* ── Fechas ──────────────────────────────────────────────── */
+.torneo-fechas { display: flex; align-items: center; gap: 0.75rem; }
+.fecha-item { display: flex; flex-direction: column; }
+.fecha-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; font-weight: 600; }
+.fecha-valor { font-size: 0.85rem; font-weight: 600; color: #334155; }
+.fecha-divider { color: #94a3b8; font-size: 1rem; margin-top: 0.5rem; }
+
+/* ── Duración chip ───────────────────────────────────────── */
+.duracion-chip { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: #6d28d9; background: #ede9fe; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; align-self: flex-start; }
+
+/* ── Categorías ──────────────────────────────────────────── */
+.categorias-list { display: flex; flex-direction: column; gap: 0.35rem; }
+.categorias-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; font-weight: 600; }
+.categorias-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.cat-chip { background: #dbeafe; color: #1e40af; font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 12px; }
+.sin-categorias { font-size: 0.78rem; color: #94a3b8; font-style: italic; }
+
+/* ── Reglamento preview ──────────────────────────────────── */
+.reglamento-preview { display: flex; gap: 0.5rem; align-items: flex-start; background: #f8fafc; border-radius: 8px; padding: 0.6rem 0.75rem; border: 1px solid #e2e8f0; }
+.reglamento-icon { flex-shrink: 0; font-size: 0.9rem; }
+.reglamento-text { font-size: 0.78rem; color: #475569; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
