@@ -1,1 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  --color-bg-primary: #101415;
+  --color-bg-card: #191c1e;
+  --color-bg-elevated: #1d2022;
+  --color-border-subtle: rgba(100, 116, 139, 0.2);
+  --color-border-active: #b9c7e4;
+  
+  --color-accent-mate: #2d5a27;
+  --color-accent-hover: #1e3f1b;
+  --color-accent-primary: #b9c7e4;
+  
+  --color-text-primary: #e0e3e5;
+  --color-text-secondary: #c5c6cd;
+  --color-text-muted: #8f9097;
+  
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-body);
+  margin: 0;
+}
+
+/* Scrollbar personalizado premium */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222222;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}

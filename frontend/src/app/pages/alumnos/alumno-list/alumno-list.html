@@ -1,19 +1,36 @@
 <div class="list-container">
     <div class="header">
         <div class="header-title">
-            <h2>Gestión de Alumnos</h2>
+            <h2>GESTIÓN DE ALUMNOS</h2>
             <span class="header-subtitle">Directorio principal de jugadores</span>
         </div>
         <a routerLink="/alumnos/nuevo" class="btn btn-primary">
-            + Nuevo Alumno
+            <span class="material-symbols-outlined">add</span>
+            NUEVO ALUMNO
         </a>
+    </div>
+
+    <!-- Tarjetas de Métricas en Tiempo Real -->
+    <div class="metric-cards">
+        <div class="card">
+            <span class="card-label">Total Alumnos</span>
+            <h3 class="card-value">{{ totalAlumnos() }}</h3>
+        </div>
+        <div class="card card-active">
+            <span class="card-label">Activos</span>
+            <h3 class="card-value">{{ totalActivos() }}</h3>
+        </div>
+        <div class="card">
+            <span class="card-label">Categorías</span>
+            <h3 class="card-value">{{ totalCategorias() }}</h3>
+        </div>
     </div>
 
     <!-- Barra de Filtros -->
     <div class="filters-bar">
         <!-- Búsqueda por nombre -->
         <div class="filter-group search-group">
-            <span class="search-icon"></span>
+            <span class="material-symbols-outlined search-icon">search</span>
             <input
                 id="busquedaNombre"
                 type="text"
@@ -22,7 +39,9 @@
                 autocomplete="off"
             />
             @if (busquedaNombre()) {
-                <button class="btn-clear" (click)="busquedaNombre.set('')" title="Limpiar">x</button>
+                <button class="btn-clear" (click)="busquedaNombre.set('')" title="Limpiar">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">close</span>
+                </button>
             }
         </div>
 
@@ -42,6 +61,7 @@
                 <option value="">Todos</option>
                 <option value="Activo">Activos</option>
                 <option value="Inactivo">Inactivos</option>
+                <option value="Baja">Baja</option>
             </select>
         </div>
     </div>
@@ -55,7 +75,10 @@
     @if (errorMsg()) {
         <div class="alert alert-error">
             <p>{{ errorMsg() }}</p>
-            <button (click)="loadAlumnos()" class="btn btn-secondary">Reintentar</button>
+            <button (click)="loadAlumnos()" class="btn btn-secondary">
+                <span class="material-symbols-outlined">refresh</span>
+                Reintentar
+            </button>
         </div>
     }
 
@@ -63,12 +86,16 @@
         @if (alumnos().length === 0) {
             <div class="empty-state">
                 <p>No hay alumnos registrados aún.</p>
-                <a routerLink="/alumnos/nuevo" class="btn btn-primary">Registrar primer alumno</a>
+                <a routerLink="/alumnos/nuevo" class="btn btn-primary">
+                    <span class="material-symbols-outlined">add</span>
+                    Registrar primer alumno
+                </a>
             </div>
         } @else if (alumnosFiltrados().length === 0) {
             <div class="empty-state">
                 <p>No se encontraron alumnos con los filtros actuales.</p>
                 <button class="btn btn-secondary" (click)="busquedaNombre.set(''); filtroCategoria.set(''); filtroEstatus.set('')">
+                    <span class="material-symbols-outlined">filter_alt_off</span>
                     Limpiar filtros
                 </button>
             </div>
@@ -82,17 +109,24 @@
                             <th>Tutor</th>
                             <th>F. Inscripción</th>
                             <th>Estatus</th>
-                            <th>Acciones</th>
+                            <th class="text-right">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @for (alumno of alumnosFiltrados(); track alumno.id_alumno) {
                             <tr>
                                 <td class="nombre-cell">
-                                    <strong>{{ alumno.nombre_completo }}</strong>
-                                    @if (alumno.genero) {
-                                        <span class="genero-badge">{{ alumno.genero }}</span>
-                                    }
+                                    <div class="avatar-placeholder">
+                                        {{ alumno.nombre_completo.substring(0, 2).toUpperCase() }}
+                                    </div>
+                                    <div>
+                                        <strong style="display: block; color: #ffffff;">{{ alumno.nombre_completo }}</strong>
+                                        @if (alumno.genero) {
+                                            <span class="genero-badge" style="margin-top: 0.25rem; display: inline-block;">
+                                                {{ alumno.genero === 'M' ? 'MASCULINO' : 'FEMENINO' }}
+                                            </span>
+                                        }
+                                    </div>
                                 </td>
                                 <td>
                                     @if (alumno.nombre_categoria) {
@@ -101,11 +135,11 @@
                                         <span class="no-data">Sin asignar</span>
                                     }
                                 </td>
-                                <td>{{ alumno.tutor_nombre }}</td>
-                                <td>{{ alumno.fecha_inscripcion | date:'dd/MM/yyyy' }}</td>
+                                <td style="color: var(--color-text-secondary);">{{ alumno.tutor_nombre }}</td>
+                                <td style="color: var(--color-text-secondary);">{{ alumno.fecha_inscripcion | date:'dd/MM/yyyy' }}</td>
                                 <td>
                                     <span class="estatus-badge" [class]="'estatus-' + (alumno.estatus | lowercase)">
-                                        {{ alumno.estatus }}
+                                        {{ alumno.estatus | uppercase }}
                                     </span>
                                 </td>
                                 <td class="actions">
@@ -113,12 +147,14 @@
                                         (click)="editAlumno(alumno.id_alumno!)"
                                         class="btn btn-edit"
                                         title="Editar alumno">
+                                        <span class="material-symbols-outlined" style="font-size: 16px;">edit</span>
                                         Editar
                                     </button>
                                     <button
                                         (click)="deleteAlumno(alumno)"
                                         class="btn btn-delete"
                                         title="Dar de baja">
+                                        <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
                                         Eliminar
                                     </button>
                                 </td>

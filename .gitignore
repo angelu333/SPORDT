@@ -24,3 +24,9 @@ Thumbs.db
 dist/
 build/
 .angular/
+
+# Herramientas de IA y Agentes
+.agents/
+.claude/
+.kiro/
+.trae/

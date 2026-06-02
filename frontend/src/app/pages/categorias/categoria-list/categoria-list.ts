@@ -60,4 +60,29 @@ export class CategoriaList implements OnInit {
             }
         });
     }
+
+    // Funciones para soporte de Bento Grid dinámico
+    getCategoryIcon(nombre: string): string {
+        const n = nombre.toLowerCase();
+        if (n.includes('sub-6')) return 'child_care';
+        if (n.includes('sub-8')) return 'sports_esports';
+        if (n.includes('sub-10')) return 'sports_soccer';
+        if (n.includes('sub-12')) return 'groups';
+        if (n.includes('sub-14')) return 'fitness_center';
+        if (n.includes('sub-16')) return 'monitoring';
+        if (n.includes('sub-18')) return 'star';
+        return 'workspace_premium';
+    }
+
+    getCategoryTag(nombre: string): string {
+        const n = nombre.toLowerCase();
+        if (n.includes('sub-6')) return 'Iniciación';
+        if (n.includes('sub-8')) return 'Formación';
+        if (n.includes('sub-10')) return 'Desarrollo';
+        if (n.includes('sub-12')) return 'Pre-Competitiva';
+        if (n.includes('sub-14')) return 'Competitiva';
+        if (n.includes('sub-16')) return 'Rendimiento';
+        if (n.includes('sub-18')) return 'Pre-Profesional';
+        return 'Elite Pro';
+    }
 }

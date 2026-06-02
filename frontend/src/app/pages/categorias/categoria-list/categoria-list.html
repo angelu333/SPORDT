@@ -1,11 +1,12 @@
 <div class="list-container">
     <div class="header">
         <div class="header-title">
-            <h2>Categorías Deportivas</h2>
-            <span class="header-subtitle">Clasificación de alumnos por rango de edad</span>
+            <h2>CATEGORÍAS DEPORTIVAS</h2>
+            <span class="header-subtitle">Gestión jerárquica de divisiones atléticas por rango de edad</span>
         </div>
         <a routerLink="/categorias/nueva" class="btn btn-primary">
-            + Nueva Categoría
+            <span class="material-symbols-outlined">add</span>
+            NUEVA CATEGORÍA
         </a>
     </div>
 
@@ -18,7 +19,10 @@
     @if (errorMsg()) {
         <div class="alert alert-error">
             <p>{{ errorMsg() }}</p>
-            <button (click)="loadCategorias()" class="btn btn-secondary">Reintentar</button>
+            <button (click)="loadCategorias()" class="btn btn-secondary">
+                <span class="material-symbols-outlined">refresh</span>
+                Reintentar
+            </button>
         </div>
     }
 
@@ -26,55 +30,106 @@
         @if (categorias().length === 0) {
             <div class="empty-state">
                 <p>No hay categorías registradas aún.</p>
-                <a routerLink="/categorias/nueva" class="btn btn-primary">Registrar primera categoría</a>
+                <a routerLink="/categorias/nueva" class="btn btn-primary">
+                    <span class="material-symbols-outlined">add</span>
+                    Registrar primera categoría
+                </a>
             </div>
         } @else {
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Categoría</th>
-                            <th>Rango de Edad</th>
-                            <th>Descripción</th>
-                            <th>Alumnos Activos</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (cat of categorias(); track cat.id_categoria) {
-                            <tr>
-                                <td>
-                                    <span class="categoria-badge">{{ cat.nombre_categoria }}</span>
-                                </td>
-                                <td class="rango">
-                                    {{ cat.edad_minima }} – {{ cat.edad_maxima }} años
-                                </td>
-                                <td class="descripcion">{{ cat.descripcion || '—' }}</td>
-                                <td>
-                                    <span class="alumnos-count" [class.sin-alumnos]="cat.total_alumnos === 0">
-                                        {{ cat.total_alumnos ?? 0 }} alumno(s)
-                                    </span>
-                                </td>
-                                <td class="actions">
-                                    <button
-                                        (click)="editCategoria(cat.id_categoria!)"
-                                        class="btn btn-edit"
-                                        title="Editar categoría">
-                                        Editar
+            <!-- Bento Grid Arquitectónico -->
+            <div class="bento-grid">
+                @for (cat of categorias(); track cat.id_categoria) {
+                    <!-- Caso 1: Tarjeta Destacada (Sub-18) -->
+                    @if (cat.nombre_categoria.toLowerCase().includes('sub-18')) {
+                        <div class="category-card featured-card">
+                            <div class="bg-image-container">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDORVnXzxveGWTVzKooKjzmE-rVvbN5INUhw6bKEjhMpuFLmn5CoTDR7gfxm8Q-Lo0ksb9iNTEMW-97m1gaqseIGPGApntifk8z-bUcmkSEY4ahQ53YhKnvs56TwdlAgcVTbbXOjL458vo6DEMUaF3x0yP_tkwp2Te02lMp2DvpuuVih1hc3v29et-iEDq6sUFMBeJU7rbQELDPf8l1-I20nTE4EjhJsQ6BEPcdZqwvaBBxI3Wnvg4aiV86Pn16IIU_eVcRY1weXIk" class="featured-bg-img" alt="Elite Training Session">
+                                <div class="gradient-overlay"></div>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <div class="card-header">
+                                        <span class="card-tag featured">{{ getCategoryTag(cat.nombre_categoria) }}</span>
+                                        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    </div>
+                                    <h2 class="card-title">{{ cat.nombre_categoria }}</h2>
+                                    <p class="card-description">{{ cat.descripcion || 'Preparación intensiva para el alto rendimiento y transición al ecosistema profesional.' }}</p>
+                                    <p class="card-range" style="color: var(--color-text-secondary); margin-top: 0.5rem;">Rango: {{ cat.edad_minima }} - {{ cat.edad_maxima }} años</p>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="metric-row">
+                                        <span class="metric-label">Atletas Seleccionados</span>
+                                        <span class="metric-value">{{ cat.total_alumnos ?? 0 }}</span>
+                                    </div>
+                                    <div class="progress-track">
+                                        <div class="progress-bar" [style.width]="((cat.total_alumnos ?? 0) / 40) * 100 + '%'"></div>
+                                    </div>
+                                    <div class="card-actions">
+                                        <button (click)="editCategoria(cat.id_categoria!)" class="btn-card-action" title="Editar">
+                                            <span class="material-symbols-outlined" style="font-size: 14px;">edit</span> Editar
+                                        </button>
+                                        <button (click)="deleteCategoria(cat)" class="btn-card-action btn-delete" title="Desactivar" [disabled]="(cat.total_alumnos ?? 0) > 0">
+                                            <span class="material-symbols-outlined" style="font-size: 14px;">delete</span> Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <!-- Caso 2: Tarjetas Bento Estándar (Sub-6, Sub-8, Sub-10, Sub-12, Sub-14, Sub-16) -->
+                    @else {
+                        <div class="category-card col-span-12 md:col-span-4">
+                            <div>
+                                <div class="card-header">
+                                    <span class="card-tag">{{ getCategoryTag(cat.nombre_categoria) }}</span>
+                                    <span class="material-symbols-outlined card-icon">{{ getCategoryIcon(cat.nombre_categoria) }}</span>
+                                </div>
+                                <h2 class="card-title">{{ cat.nombre_categoria }}</h2>
+                                <p class="card-range">{{ cat.edad_minima }}-{{ cat.edad_maxima }} años</p>
+                                @if (cat.descripcion) {
+                                    <p class="descripcion" style="margin-top: 0.5rem; opacity: 0.8;">{{ cat.descripcion }}</p>
+                                }
+                            </div>
+                            <div class="card-footer">
+                                <div class="metric-row">
+                                    <span class="metric-label">Alumnos Activos</span>
+                                    <span class="metric-value">{{ cat.total_alumnos ?? 0 }}</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-bar" [style.width]="((cat.total_alumnos ?? 0) / 40) * 100 + '%'"></div>
+                                </div>
+                                <div class="card-actions">
+                                    <button (click)="editCategoria(cat.id_categoria!)" class="btn-card-action" title="Editar">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">edit</span> Editar
                                     </button>
-                                    <button
-                                        (click)="deleteCategoria(cat)"
-                                        class="btn btn-delete"
-                                        title="Desactivar categoría"
-                                        [disabled]="(cat.total_alumnos ?? 0) > 0">
-                                        Eliminar
+                                    <button (click)="deleteCategoria(cat)" class="btn-card-action btn-delete" title="Desactivar" [disabled]="(cat.total_alumnos ?? 0) > 0">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">delete</span> Eliminar
                                     </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+                <!-- Elite Pro (Fila Completa al Final) -->
+                <div class="category-card elite-pro-card">
+                    <div class="elite-pro-badge-container">
+                        <span class="material-symbols-outlined elite-pro-icon" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                    </div>
+                    <div class="elite-pro-info">
+                        <div class="elite-pro-header-row">
+                            <span class="elite-pro-tag">Máximo Rendimiento</span>
+                        </div>
+                        <h2 class="card-title">Elite Pro</h2>
+                        <p class="card-description">División de alto desempeño para atletas de carrera profesional establecida. Acceso a biometría avanzada y analítica predictiva en el ecosistema del club.</p>
+                    </div>
+                    <div class="elite-pro-metrics">
+                        <span class="elite-pro-value">12</span>
+                        <span class="metric-label">Maestros Elite</span>
+                    </div>
+                </div>
             </div>
         }
     }
 </div>
+

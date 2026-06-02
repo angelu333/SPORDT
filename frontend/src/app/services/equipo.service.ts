@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Equipo, Jugador } from '../models/equipo.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -9,7 +10,7 @@ import { Equipo, Jugador } from '../models/equipo.model';
 export class EquipoService {
 
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:3000/api/equipos';
+    private readonly apiUrl = `${environment.apiUrl}/equipos`;
 
     getAll(): Observable<Equipo[]> {
         return this.http.get<Equipo[]>(this.apiUrl);

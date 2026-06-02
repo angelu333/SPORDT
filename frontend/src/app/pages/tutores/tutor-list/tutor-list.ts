@@ -4,6 +4,7 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TutorService } from '../../../services/tutor.service';
 import { Tutor } from '../../../models/tutor.model';
+import { PaginatedResponse } from '../../../../models/paginated-response.model';
 
 @Component({
     selector: 'app-tutor-list',
@@ -41,8 +42,8 @@ export class TutorList implements OnInit {
         this.errorMsg.set('');
 
         this.tutorService.getAll().subscribe({
-            next: (data) => {
-                this.tutores.set(data);
+            next: (response: PaginatedResponse<Tutor>) => {
+                this.tutores.set(response.data);
                 this.loading.set(false);
             },
             error: (err) => {
@@ -57,14 +58,12 @@ export class TutorList implements OnInit {
         this.router.navigate(['/tutores/editar', id]);
     }
 
+// ... (existing code up to line 58)
     deleteTutor(tutor: Tutor): void {
-        const confirmado = confirm(`¿Estás seguro de desactivar al tutor "${tutor.nombre_completo}"?`);
-        if (!confirmado) return;
+        if (!confirm(`¿Estás seguro de desactivar al tutor "${tutor.nombre_completo}"?`)) return;
 
         this.tutorService.delete(tutor.id_tutor!).subscribe({
-            next: () => {
-                this.loadTutores();
-            },
+            next: () => this.loadTutores(),
             error: (err) => {
                 console.error('Error al eliminar tutor:', err);
                 alert('No se pudo desactivar al tutor. Puede tener alumnos asociados.');

@@ -1,15 +1,16 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { DatePipe, LowerCasePipe } from '@angular/common';
+import { DatePipe, LowerCasePipe, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AlumnoService } from '../../../services/alumno.service';
 import { Alumno } from '../../../models/alumno.model';
+import { PaginatedResponse } from '../../../../models/paginated-response.model';
 import { CategoriaService } from '../../../services/categoria.service';
 import { Categoria } from '../../../models/categoria.model';
 
 @Component({
     selector: 'app-alumno-list',
-    imports: [RouterLink, DatePipe, LowerCasePipe, FormsModule],
+    imports: [RouterLink, DatePipe, LowerCasePipe, UpperCasePipe, FormsModule],
     templateUrl: './alumno-list.html',
     styleUrl: './alumno-list.css'
 })
@@ -28,6 +29,11 @@ export class AlumnoList implements OnInit {
     filtroCategoria = signal<string>('');
     filtroEstatus = signal<string>('');
     busquedaNombre = signal<string>(''); // Búsqueda por nombre de alumno
+
+    // Señales Computadas para Tarjetas de Métricas
+    totalAlumnos = computed(() => this.alumnos().length);
+    totalActivos = computed(() => this.alumnos().filter(a => a.estatus === 'Activo').length);
+    totalCategorias = computed(() => this.categorias().length);
 
     // Alumnos filtrados computados — reacciona a los 3 filtros a la vez
     alumnosFiltrados = computed(() => {
@@ -50,8 +56,8 @@ export class AlumnoList implements OnInit {
         this.errorMsg.set('');
 
         this.alumnoService.getAll().subscribe({
-            next: (data) => {
-                this.alumnos.set(data);
+            next: (response: PaginatedResponse<Alumno>) => {
+                this.alumnos.set(response.data);
                 this.loading.set(false);
             },
             error: (err) => {

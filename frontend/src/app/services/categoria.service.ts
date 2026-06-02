@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Categoria, AsignacionCategoria } from '../models/categoria.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -9,7 +10,7 @@ import { Categoria, AsignacionCategoria } from '../models/categoria.model';
 export class CategoriaService {
 
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:3000/api/categorias';
+    private readonly apiUrl = `${environment.apiUrl}/categorias`;
 
     /** Obtener todas las categorías activas (con conteo de alumnos) */
     getAll(): Observable<Categoria[]> {

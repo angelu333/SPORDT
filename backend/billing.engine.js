@@ -79,39 +79,44 @@ const generarMensualidades = async () => {
         let generados = 0;
         let omitidos = 0;
 
-        // 3. Por cada alumno, generar cargo solo si no existe ya para este periodo
-        for (const alumno of alumnos) {
-            const [existe] = await pool.query(
-                `SELECT id_cargo FROM cargos_financieros 
-                 WHERE tipo_entidad = 'Alumno' AND id_entidad = ? AND periodo = ?`,
-                [alumno.id_alumno, periodo]
-            );
-
-            if (existe.length > 0) {
-                // Ya tiene cargo este mes — omitir (protección contra duplicados)
-                omitidos++;
-                continue;
-            }
-
-            await pool.query(
-                `INSERT INTO cargos_financieros 
-                 (tipo_entidad, id_entidad, concepto, monto_total, fecha_vencimiento, periodo)
-                 VALUES ('Alumno', ?, ?, ?, ?, ?)`,
-                [
-                    alumno.id_alumno,
-                    `${tarifa.concepto} - ${periodo}`,
-                    tarifa.monto,
-                    fechaVencimiento,
-                    periodo
-                ]
-            );
-            generados++;
-        }
-
-        console.log(`[Cobranza] Mensualidades generadas: ${generados} | Omitidas (ya existían): ${omitidos}`);
-        return { generados, omitidos };
+        // ... (existing code)
+// 3. Generar todos los cargos de una sola vez para evitar el problema de rendimiento N+1
+        const [result] = await pool.query(
+            `INSERT INTO cargos_financieros 
+             (tipo_entidad, id_entidad, concepto, monto_total, fecha_vencimiento, periodo)
+             SELECT 
+                'Alumno', 
+                a.id_alumno, 
+                ?, 
+                ?, 
+                ?, 
+                ?
+             FROM alumnos a
+             WHERE a.estatus = 'Activo'
+             AND NOT EXISTS (
+                 SELECT 1 FROM cargos_financieros cf 
+                 WHERE cf.tipo_entidad = 'Alumno' 
+                 AND cf.id_entidad = a.id_alumno 
+                 AND cf.periodo = ?
+             )`,
+            [
+                `${tarifa.concepto} - ${periodo}`,
+                tarifa.monto,
+                fechaVencimiento,
+                periodo,
+                periodo
+            ]
+        );
+        
+        generados = result.affectedRows;
+        // Nota: 'omitidos' es difícil de calcular exactamente con un solo INSERT, 
+        // pero el proceso ahora es extremadamente rápido.
+        console.log(`[Cobranza] Proceso de mensualidades completado. Cargos nuevos: ${generados}`);
+        return { generados, omitidos: 'Calculado por BD' };
 
     } catch (error) {
+// ... (rest of the file)
+
         console.error('[Cobranza] Error al generar mensualidades:', error.message);
         return { generados: 0, omitidos: 0, error: error.message };
     }

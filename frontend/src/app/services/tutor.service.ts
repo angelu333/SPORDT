@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tutor } from '../models/tutor.model';
+import { PaginatedResponse } from '../models/paginated-response.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -9,10 +11,10 @@ import { Tutor } from '../models/tutor.model';
 export class TutorService {
 
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:3000/api/tutores';
+    private readonly apiUrl = `${environment.apiUrl}/tutores`;
 
-    getAll(): Observable<Tutor[]> {
-        return this.http.get<Tutor[]>(this.apiUrl);
+    getAll(): Observable<PaginatedResponse<Tutor>> {
+        return this.http.get<PaginatedResponse<Tutor>>(this.apiUrl);
     }
 
     getById(id: number): Observable<Tutor> {

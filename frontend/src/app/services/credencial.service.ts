@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Credencial, CredencialEstatus, JugadorCredencialFiltrado } from '../models/credencial.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -9,7 +10,7 @@ import { Credencial, CredencialEstatus, JugadorCredencialFiltrado } from '../mod
 export class CredencialService {
 
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:3000/api/credenciales';
+    private readonly apiUrl = `${environment.apiUrl}/credenciales`;
 
     getAll(): Observable<Credencial[]> {
         return this.http.get<Credencial[]>(this.apiUrl);
